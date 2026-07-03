@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+:root {
+  --purple-1: #8b1ea0;
+  --purple-2: #7b2d8b;
+  --purple-3: #9b4dab;
+  --white: #ffffff;
+  --lavender: #f5f0fa;
+  --ink: #2a1230;
+
+  --background: var(--lavender);
+  --foreground: var(--ink);
+}
+
+@theme inline {
+  --color-purple-1: var(--purple-1);
+  --color-purple-2: var(--purple-2);
+  --color-purple-3: var(--purple-3);
+  --color-lavender: var(--lavender);
+  --color-ink: var(--ink);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --font-serif: var(--font-playfair);
+  --font-sans: var(--font-inter);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+::selection {
+  background: var(--purple-3);
+  color: var(--white);
+}
+
+@keyframes kenburns {
+  0% {
+    transform: scale(1) translate3d(0, 0, 0);
+  }
+  50% {
+    transform: scale(1.08) translate3d(-1%, -1%, 0);
+  }
+  100% {
+    transform: scale(1) translate3d(0, 0, 0);
+  }
+}
+
+.reveal-line {
+  display: block;
+}

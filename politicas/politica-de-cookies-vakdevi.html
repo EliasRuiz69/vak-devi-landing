@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Política de Cookies – Vak Devi</title>
+  <meta name="description" content="Política de Cookies de Vak Devi, consultoría de psicoterapia y desarrollo humano con sede en Mérida, Yucatán, México." />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --brand-primary:   #8B1EA0;
+      --brand-secondary: #7B2D8B;
+      --brand-tertiary:  #9B4DAB;
+      --brand-light:     #F5F0FA;
+      --text-main:       #241629;
+      --text-muted:      #6B5A72;
+      --bg:              #FBFAFC;
+      --white:           #FFFFFF;
+      --border:          #E6DDEF;
+      --radius:          10px;
+      --font:            'Segoe UI', Arial, sans-serif;
+      --max-w:           900px;
+    }
+
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font); font-size: 16px; line-height: 1.75; color: var(--text-main); background: var(--bg); }
+
+    /* ── HEADER ── */
+    header { background: var(--brand-secondary); padding: 32px 24px 28px; text-align: center; }
+    .logo-wrap { display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: 18px; }
+    .logo-badge { width: 52px; height: 52px; background: var(--brand-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700; color: white; font-family: Georgia, serif; }
+    .logo-text { font-size: 26px; font-weight: 600; color: white; letter-spacing: 3px; font-family: Georgia, serif; }
+    header h1 { font-size: clamp(20px, 4vw, 28px); font-weight: 700; color: white; }
+    .header-meta { margin-top: 8px; font-size: 13px; color: rgba(255,255,255,0.65); }
+
+    /* ── LAYOUT ── */
+    .container { max-width: var(--max-w); margin: 0 auto; padding: 40px 24px 80px; }
+
+    /* ── INTRO CARD ── */
+    .intro-card { background: var(--brand-light); border-left: 4px solid var(--brand-primary); border-radius: var(--radius); padding: 18px 22px; margin-bottom: 36px; font-size: 15px; color: var(--text-muted); }
+    .intro-card strong { color: var(--brand-secondary); }
+
+    /* ── TOC ── */
+    .toc { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px 26px; margin-bottom: 44px; }
+    .toc h2 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--brand-primary); margin-bottom: 14px; }
+    .toc ol { list-style: none; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 24px; }
+    @media (max-width: 560px) { .toc ol { grid-template-columns: 1fr; } }
+    .toc li a { color: var(--brand-secondary); text-decoration: none; font-size: 14px; display: flex; align-items: baseline; gap: 7px; }
+    .toc li a:hover { color: var(--brand-primary); text-decoration: underline; }
+    .toc-num { font-size: 11px; font-weight: 700; color: var(--brand-primary); min-width: 20px; }
+
+    /* ── SECTIONS ── */
+    section { margin-bottom: 48px; scroll-margin-top: 20px; }
+    h2.section-title { font-size: clamp(17px, 3vw, 21px); font-weight: 700; color: var(--brand-secondary); padding-bottom: 10px; border-bottom: 2px solid var(--brand-primary); margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+    .section-number { display: inline-flex; align-items: center; justify-content: center; min-width: 30px; height: 30px; background: var(--brand-primary); color: white; border-radius: 6px; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+    h3 { font-size: 15px; font-weight: 700; color: var(--brand-secondary); margin: 22px 0 10px; }
+    p { margin-bottom: 14px; font-size: 15px; }
+
+    /* ── LISTS ── */
+    ul.policy-list { list-style: none; padding: 0; margin: 0 0 16px; }
+    ul.policy-list li { display: flex; align-items: flex-start; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 15px; }
+    ul.policy-list li:last-child { border-bottom: none; }
+    ul.policy-list li::before { content: '›'; color: var(--brand-primary); font-size: 18px; font-weight: 700; flex-shrink: 0; line-height: 1.5; }
+    ul.policy-list li strong { color: var(--brand-secondary); }
+
+    /* ── TABLES ── */
+    .table-wrap { overflow-x: auto; margin: 20px 0 24px; border-radius: var(--radius); border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; min-width: 520px; }
+    thead tr { background: var(--brand-light); }
+    thead th { padding: 10px 14px; text-align: left; font-weight: 700; color: var(--brand-secondary); font-size: 13px; border-bottom: 2px solid var(--brand-primary); white-space: nowrap; }
+    tbody tr:nth-child(even) { background: #FAF7FC; }
+    tbody td { padding: 9px 14px; vertical-align: top; color: var(--text-main); border-bottom: 1px solid var(--border); }
+    tbody tr:last-child td { border-bottom: none; }
+    .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    .tag-necessary { background: #D4EDDA; color: #155724; }
+    .tag-analytics  { background: #CCE5FF; color: #004085; }
+    .tag-functional { background: #FFF3CD; color: #856404; }
+    .tag-marketing  { background: #F8D7DA; color: #721C24; }
+    .tag-social     { background: #E2D9F3; color: #432874; }
+
+    /* ── BOXES ── */
+    .highlight-box { background: var(--brand-light); border: 1px solid var(--brand-tertiary); border-radius: var(--radius); padding: 14px 18px; margin: 16px 0; font-size: 14px; }
+    .highlight-box.warning { background: #FFF8E6; border-color: #E0A020; }
+    .highlight-box.info    { background: #F3EEF8; border-color: var(--brand-tertiary); }
+
+    /* ── BROWSER GRID ── */
+    .browser-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin: 16px 0; }
+    .browser-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
+    .browser-card .browser-name { font-weight: 700; color: var(--brand-secondary); font-size: 14px; margin-bottom: 4px; }
+    .browser-card p { font-size: 13px; color: var(--text-muted); margin: 0; }
+
+    /* ── CONTACT GRID ── */
+    .contact-grid { display: grid; grid-template-columns: auto 1fr; gap: 8px 20px; margin: 14px 0; font-size: 15px; }
+    .contact-grid dt { font-weight: 700; color: var(--brand-secondary); }
+    .contact-grid a { color: var(--brand-primary); text-decoration: none; }
+    .contact-grid a:hover { text-decoration: underline; }
+
+    /* ── BACK TO TOP ── */
+    .back-to-top { display: inline-block; margin-top: 28px; color: var(--brand-primary); font-size: 14px; font-weight: 600; text-decoration: none; }
+    .back-to-top:hover { text-decoration: underline; }
+
+    /* ── FOOTER ── */
+    footer { background: var(--brand-secondary); color: rgba(255,255,255,0.7); text-align: center; padding: 26px 24px; font-size: 13px; }
+    footer strong { color: white; }
+    footer a { color: #E9C9F0; text-decoration: none; }
+
+    /* ── CONSENT BADGE ── */
+    .consent-type { display: flex; gap: 16px; align-items: flex-start; margin: 10px 0; }
+    .consent-badge { flex-shrink: 0; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; margin-top: 3px; }
+    .badge-no  { background: #D4EDDA; color: #155724; }
+    .badge-yes { background: #FFF3CD; color: #856404; }
+    .consent-text { font-size: 14px; color: var(--text-main); }
+    .consent-text strong { color: var(--brand-secondary); }
+  </style>
+</head>
+<body>
+
+<header id="top">
+  <div class="logo-wrap">
+    <div class="logo-badge">V</div>
+    <span class="logo-text">VAK DEVI</span>
+  </div>
+  <h1>Política de Cookies</h1>
+  <p class="header-meta">Última actualización: julio de 2026 &nbsp;·&nbsp; vakdevi.com</p>
+</header>
+
+<main class="container">
+
+  <div class="intro-card">
+    Esta Política explica qué son las cookies, cuáles utilizamos en <strong>vakdevi.com</strong>, para qué sirven y cómo puede gestionarlas o desactivarlas. Su uso se rige por la <strong>Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP)</strong> y los lineamientos del <strong>INAI</strong>.
+  </div>
+
+  <!-- TOC -->
+  <nav class="toc" aria-label="Índice">
+    <h2>Contenido</h2>
+    <ol>
+      <li><a href="#s1"><span class="toc-num">01</span> ¿Qué son las cookies?</a></li>
+      <li><a href="#s2"><span class="toc-num">02</span> Responsable del tratamiento</a></li>
+      <li><a href="#s3"><span class="toc-num">03</span> Tipos de cookies</a></li>
+      <li><a href="#s4"><span class="toc-num">04</span> Listado detallado</a></li>
+      <li><a href="#s5"><span class="toc-num">05</span> Base legal y consentimiento</a></li>
+      <li><a href="#s6"><span class="toc-num">06</span> Cómo gestionar las cookies</a></li>
+      <li><a href="#s7"><span class="toc-num">07</span> Cookies de terceros</a></li>
+      <li><a href="#s8"><span class="toc-num">08</span> Menores de edad</a></li>
+      <li><a href="#s9"><span class="toc-num">09</span> Actualizaciones</a></li>
+      <li><a href="#s10"><span class="toc-num">10</span> Contacto</a></li>
+    </ol>
+  </nav>
+
+  <!-- S1 -->
+  <section id="s1">
+    <h2 class="section-title"><span class="section-number">1</span> ¿Qué son las Cookies?</h2>
+    <p>Las cookies son pequeños archivos de texto que un sitio web coloca en su dispositivo (computadora, teléfono o tableta) cuando lo visita. Permiten al sitio recordar sus acciones y preferencias durante un período de tiempo, de modo que no tenga que volver a configurarlas en cada visita.</p>
+    <p>Junto con las cookies, pueden usarse tecnologías similares como <strong>píxeles de seguimiento</strong> (web beacons), <strong>almacenamiento local</strong> (localStorage) y <strong>huellas digitales del navegador</strong>. En este documento, "cookies" engloba todas estas tecnologías.</p>
+  </section>
+
+  <!-- S2 -->
+  <section id="s2">
+    <h2 class="section-title"><span class="section-number">2</span> Responsable del Tratamiento</h2>
+    <p>El responsable del uso de cookies en vakdevi.com es:</p>
+    <dl class="contact-grid">
+      <dt>Nombre comercial</dt><dd>Vak Devi</dd>
+      <dt>Actividad</dt><dd>Consultoría de psicoterapia y desarrollo humano</dd>
+      <dt>Domicilio</dt><dd>Mérida, Yucatán, México</dd>
+      <dt>Sitio web</dt><dd><a href="https://vakdevi.com" target="_blank" rel="noopener">https://vakdevi.com</a></dd>
+      <dt>Correo</dt><dd><a href="mailto:contacto@vakdevi.com">contacto@vakdevi.com</a></dd>
+    </dl>
+  </section>
+
+  <!-- S3 -->
+  <section id="s3">
+    <h2 class="section-title"><span class="section-number">3</span> Tipos de Cookies que Utilizamos</h2>
+
+    <h3>3.1 Según su origen</h3>
+    <ul class="policy-list">
+      <li><strong>Cookies propias (first-party):</strong> instaladas directamente por Vak Devi desde el dominio vakdevi.com.</li>
+      <li><strong>Cookies de terceros (third-party):</strong> instaladas por proveedores externos (Google Analytics, redes sociales, etc.) cuyos servicios están integrados en el Sitio.</li>
+    </ul>
+
+    <h3>3.2 Según su duración</h3>
+    <ul class="policy-list">
+      <li><strong>Cookies de sesión:</strong> se eliminan automáticamente al cerrar el navegador.</li>
+      <li><strong>Cookies persistentes:</strong> permanecen almacenadas durante el período indicado en cada cookie o hasta que usted las elimine manualmente.</li>
+    </ul>
+
+    <h3>3.3 Según su finalidad</h3>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Categoría</th>
+            <th>¿Requiere consentimiento?</th>
+            <th>Finalidad</th>
+            <th>Ejemplos</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="tag tag-necessary">Necesarias</span></td>
+            <td>No</td>
+            <td>Permiten la navegación básica del Sitio, el acceso a áreas seguras y el correcto funcionamiento del proceso de agendamiento de sesiones. Sin ellas el Sitio no funciona correctamente.</td>
+            <td>Sesión, seguridad CSRF, progreso del formulario de cita</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-analytics">Analíticas</span></td>
+            <td>Sí</td>
+            <td>Recopilan información agregada y anónima sobre cómo los visitantes usan el Sitio para mejorarlo.</td>
+            <td>Google Analytics (_ga, _gid)</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-functional">Funcionales</span></td>
+            <td>Sí</td>
+            <td>Recuerdan sus elecciones (idioma, zona horaria, avance en el formulario de agendamiento) para ofrecer una experiencia más personalizada.</td>
+            <td>Idioma seleccionado, zona horaria</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-marketing">Marketing</span></td>
+            <td>Sí</td>
+            <td>Rastrean la actividad de navegación para mostrar contenido o publicidad relevante en redes sociales. Vak Devi no usa actualmente cookies publicitarias propias; algunos terceros integrados sí pueden hacerlo.</td>
+            <td>Meta Pixel (Facebook/Instagram, si aplica)</td>
+          </tr>
+          <tr>
+            <td><span class="tag tag-social">Redes sociales</span></td>
+            <td>Sí</td>
+            <td>Permiten compartir contenido en redes sociales e interactuar con botones integrados. Son gestionadas por las propias plataformas.</td>
+            <td>Botones de compartir, widget de WhatsApp</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- S4 -->
+  <section id="s4">
+    <h2 class="section-title"><span class="section-number">4</span> Listado Detallado de Cookies</h2>
+    <p>Principales cookies que pueden estar presentes en vakdevi.com:</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Nombre</th><th>Proveedor</th><th>Tipo</th><th>Finalidad</th><th>Duración</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>_ga</code></td>
+            <td>Google Analytics</td>
+            <td><span class="tag tag-analytics">Analítica</span></td>
+            <td>Distingue a los usuarios mediante un ID único</td>
+            <td>2 años</td>
+          </tr>
+          <tr>
+            <td><code>_gid</code></td>
+            <td>Google Analytics</td>
+            <td><span class="tag tag-analytics">Analítica</span></td>
+            <td>Distingue a los usuarios del sitio web</td>
+            <td>24 horas</td>
+          </tr>
+          <tr>
+            <td><code>_gat</code></td>
+            <td>Google Analytics</td>
+            <td><span class="tag tag-analytics">Analítica</span></td>
+            <td>Limita la tasa de solicitudes a los servidores de Google</td>
+            <td>1 minuto</td>
+          </tr>
+          <tr>
+            <td><code>cookie_consent</code></td>
+            <td>Vak Devi</td>
+            <td><span class="tag tag-necessary">Necesaria</span></td>
+            <td>Almacena la preferencia del usuario sobre el uso de cookies</td>
+            <td>12 meses</td>
+          </tr>
+          <tr>
+            <td><code>session_id</code></td>
+            <td>Vak Devi</td>
+            <td><span class="tag tag-necessary">Necesaria</span></td>
+            <td>Mantiene la sesión activa del usuario durante la navegación</td>
+            <td>Sesión</td>
+          </tr>
+          <tr>
+            <td><code>booking_session</code></td>
+            <td>Vak Devi</td>
+            <td><span class="tag tag-necessary">Necesaria</span></td>
+            <td>Conserva el avance del usuario dentro del formulario de agendamiento de sesión exploratoria mientras lo completa</td>
+            <td>Sesión</td>
+          </tr>
+          <tr>
+            <td><code>_fbp</code> <em>(si aplica)</em></td>
+            <td>Meta / Facebook</td>
+            <td><span class="tag tag-marketing">Marketing</span></td>
+            <td>Identifica navegadores para estadísticas de alcance de contenido en Facebook e Instagram</td>
+            <td>3 meses</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="highlight-box info">
+      <strong>Nota:</strong> Este listado puede actualizarse conforme evolucione el Sitio. Le recomendamos revisar esta página periódicamente.
+    </div>
+  </section>
+
+  <!-- S5 -->
+  <section id="s5">
+    <h2 class="section-title"><span class="section-number">5</span> Base Legal y Consentimiento</h2>
+
+    <div class="consent-type">
+      <span class="consent-badge badge-no">Sin consentimiento</span>
+      <p class="consent-text"><strong>Cookies estrictamente necesarias:</strong> su uso se fundamenta en el interés legítimo de Vak Devi para garantizar el funcionamiento del Sitio, incluido el proceso de agendamiento de sesiones. No requieren consentimiento previo conforme a la LFPDPPP.</p>
+    </div>
+
+    <div class="consent-type">
+      <span class="consent-badge badge-yes">Con consentimiento</span>
+      <p class="consent-text"><strong>Resto de cookies</strong> (analíticas, funcionales, marketing, redes sociales): se instalan únicamente con su consentimiento previo, que se recaba a través del banner de cookies que aparece en su primera visita al Sitio.</p>
+    </div>
+
+    <div class="highlight-box warning" style="margin-top:18px;">
+      Al hacer clic en <strong>"Aceptar todas las cookies"</strong>, usted consiente el uso de todas las categorías. Puede personalizar su elección mediante <strong>"Gestionar preferencias"</strong>. Puede retirar su consentimiento en cualquier momento desde el panel de preferencias en el pie de página del Sitio.
+    </div>
+  </section>
+
+  <!-- S6 -->
+  <section id="s6">
+    <h2 class="section-title"><span class="section-number">6</span> Cómo Gestionar y Desactivar las Cookies</h2>
+
+    <h3>6.1 Panel de preferencias del Sitio</h3>
+    <p>Puede acceder en cualquier momento al panel de gestión de cookies haciendo clic en el enlace <strong>"Preferencias de cookies"</strong> en el pie de página de vakdevi.com. Desde allí puede activar o desactivar cada categoría de cookies no esenciales.</p>
+
+    <h3>6.2 Configuración del navegador</h3>
+    <p>Puede bloquear o eliminar cookies desde la configuración de su navegador:</p>
+    <div class="browser-grid">
+      <div class="browser-card">
+        <div class="browser-name">Google Chrome</div>
+        <p>Configuración › Privacidad y seguridad › Cookies y otros datos de sitios</p>
+      </div>
+      <div class="browser-card">
+        <div class="browser-name">Mozilla Firefox</div>
+        <p>Opciones › Privacidad y seguridad › Cookies y datos del sitio</p>
+      </div>
+      <div class="browser-card">
+        <div class="browser-name">Microsoft Edge</div>
+        <p>Configuración › Privacidad, búsqueda y servicios › Cookies</p>
+      </div>
+      <div class="browser-card">
+        <div class="browser-name">Safari (Mac / iOS)</div>
+        <p>Preferencias › Privacidad › Gestionar datos del sitio web</p>
+      </div>
+    </div>
+    <p>Tenga en cuenta que la desactivación de cookies puede afectar la funcionalidad del Sitio, incluido el formulario de agendamiento de sesiones.</p>
+
+    <h3>6.3 Herramientas de opt-out de terceros</h3>
+    <ul class="policy-list">
+      <li><strong>Google Analytics:</strong> puede instalar el complemento de inhabilitación en <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener">tools.google.com/dlpage/gaoptout</a></li>
+      <li><strong>Publicidad digital:</strong> puede usar las plataformas de la Digital Advertising Alliance (DAA) o la Network Advertising Initiative (NAI).</li>
+    </ul>
+  </section>
+
+  <!-- S7 -->
+  <section id="s7">
+    <h2 class="section-title"><span class="section-number">7</span> Cookies de Terceros y Transferencias Internacionales</h2>
+    <p>Algunos terceros cuyos servicios están integrados en nuestro Sitio pueden transferir datos a servidores ubicados fuera de México. Vak Devi exige a estos proveedores acuerdos de procesamiento de datos que garanticen un nivel de protección adecuado conforme a la LFPDPPP:</p>
+    <ul class="policy-list">
+      <li><strong>Google LLC (Google Analytics):</strong> <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Política de privacidad de Google</a></li>
+      <li><strong>Meta Platforms Ireland Ltd. (si aplica Meta Pixel):</strong> <a href="https://www.facebook.com/privacy/policy" target="_blank" rel="noopener">Política de privacidad de Meta</a></li>
+    </ul>
+    <p>Le recomendamos revisar las políticas de privacidad de estos terceros para comprender cómo tratan sus datos.</p>
+  </section>
+
+  <!-- S8 -->
+  <section id="s8">
+    <h2 class="section-title"><span class="section-number">8</span> Cookies y Menores de Edad</h2>
+    <p>Nuestro Sitio y nuestros servicios están dirigidos a personas mayores de edad. Si un menor de edad requiere acompañamiento terapéutico, este debe realizarse con el consentimiento y la participación de sus padres o tutores legales, conforme a nuestro Aviso de Privacidad. No recopilamos intencionalmente datos de menores a través de cookies. Si tiene conocimiento de que un menor ha aceptado cookies en nuestro Sitio, le rogamos que nos lo comunique a <a href="mailto:contacto@vakdevi.com">contacto@vakdevi.com</a>.</p>
+  </section>
+
+  <!-- S9 -->
+  <section id="s9">
+    <h2 class="section-title"><span class="section-number">9</span> Actualizaciones de esta Política</h2>
+    <p>Vak Devi se reserva el derecho de modificar esta Política de Cookies en cualquier momento para reflejar cambios en las cookies utilizadas, en la legislación aplicable o en nuestras prácticas. Cualquier cambio significativo se notificará a través de la publicación de la versión actualizada en el Sitio e, cuando proceda, mediante un nuevo aviso de consentimiento. La fecha de "Última actualización" en el encabezado indica cuándo fue revisada por última vez.</p>
+  </section>
+
+  <!-- S10 -->
+  <section id="s10">
+    <h2 class="section-title"><span class="section-number">10</span> Contacto</h2>
+    <p>Si tiene preguntas sobre esta Política de Cookies o sobre el tratamiento de sus datos personales, contáctenos en:</p>
+    <dl class="contact-grid">
+      <dt>Correo electrónico</dt><dd><a href="mailto:contacto@vakdevi.com">contacto@vakdevi.com</a></dd>
+      <dt>Sitio web</dt><dd><a href="https://vakdevi.com" target="_blank" rel="noopener">https://vakdevi.com</a></dd>
+    </dl>
+    <div class="highlight-box">
+      Para consultas sobre protección de datos personales también puede acudir ante el <strong>Instituto Nacional de Transparencia, Acceso a la Información y Protección de Datos Personales (INAI)</strong>: <a href="https://home.inai.org.mx" target="_blank" rel="noopener">https://home.inai.org.mx</a>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Volver al inicio</a>
+  </section>
+
+</main>
+
+<footer>
+  <p><strong>Vak Devi</strong> – Psicoterapia y Desarrollo Humano</p>
+  <p style="margin-top:6px;">Mérida, Yucatán, México &nbsp;·&nbsp; <a href="mailto:contacto@vakdevi.com">contacto@vakdevi.com</a> &nbsp;·&nbsp; <a href="https://vakdevi.com">vakdevi.com</a></p>
+  <p style="margin-top:10px;">© 2026 Vak Devi. Todos los derechos reservados.</p>
+</footer>
+
+</body>
+</html>

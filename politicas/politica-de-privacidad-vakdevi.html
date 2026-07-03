@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Política de Privacidad – Vak Devi</title>
+  <meta name="description" content="Política de Privacidad de Vak Devi, consultoría de psicoterapia y desarrollo humano con sede en Mérida, Yucatán, México." />
+  <style>
+    /* ── RESET & BASE ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --brand-primary:   #8B1EA0;
+      --brand-secondary: #7B2D8B;
+      --brand-tertiary:  #9B4DAB;
+      --brand-light:     #F5F0FA;
+      --text-main:       #241629;
+      --text-muted:      #6B5A72;
+      --bg:              #FBFAFC;
+      --white:           #FFFFFF;
+      --border:          #E6DDEF;
+      --radius:          10px;
+      --font:            'Segoe UI', Arial, sans-serif;
+      --max-width:       860px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font);
+      font-size: 16px;
+      line-height: 1.75;
+      color: var(--text-main);
+      background: var(--bg);
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--brand-secondary);
+      padding: 32px 24px 28px;
+      text-align: center;
+    }
+
+    .logo-wrap { display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: 18px; }
+
+    .logo-badge {
+      width: 52px; height: 52px;
+      background: var(--brand-primary);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; font-weight: 700; color: white; font-family: Georgia, serif;
+    }
+
+    .logo-text { font-size: 26px; font-weight: 600; color: white; letter-spacing: 3px; font-family: Georgia, serif; }
+
+    header h1 {
+      font-size: clamp(20px, 4vw, 28px);
+      font-weight: 700;
+      color: white;
+      letter-spacing: 0.5px;
+    }
+
+    .header-meta {
+      margin-top: 8px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.65);
+    }
+
+    /* ── LAYOUT ── */
+    .container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    /* ── INTRO CARD ── */
+    .intro-card {
+      background: var(--brand-light);
+      border-left: 4px solid var(--brand-primary);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-bottom: 40px;
+      font-size: 15px;
+      color: var(--text-muted);
+    }
+
+    .intro-card strong { color: var(--brand-secondary); }
+
+    /* ── TOC ── */
+    .toc {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 28px;
+      margin-bottom: 48px;
+    }
+
+    .toc h2 {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--brand-primary);
+      margin-bottom: 14px;
+    }
+
+    .toc ol {
+      list-style: none;
+      padding: 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px 24px;
+    }
+
+    @media (max-width: 560px) { .toc ol { grid-template-columns: 1fr; } }
+
+    .toc li a {
+      color: var(--brand-secondary);
+      text-decoration: none;
+      font-size: 14px;
+      display: flex; align-items: baseline; gap: 6px;
+    }
+
+    .toc li a:hover { color: var(--brand-primary); text-decoration: underline; }
+
+    .toc-num {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--brand-primary);
+      min-width: 20px;
+    }
+
+    /* ── SECTIONS ── */
+    section {
+      margin-bottom: 48px;
+      scroll-margin-top: 20px;
+    }
+
+    h2.section-title {
+      font-size: clamp(18px, 3vw, 22px);
+      font-weight: 700;
+      color: var(--brand-secondary);
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--brand-primary);
+      margin-bottom: 20px;
+      display: flex; align-items: center; gap: 10px;
+    }
+
+    .section-number {
+      display: inline-flex;
+      align-items: center; justify-content: center;
+      min-width: 30px; height: 30px;
+      background: var(--brand-primary);
+      color: white;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--brand-secondary);
+      margin: 24px 0 10px;
+    }
+
+    p { margin-bottom: 14px; color: var(--text-main); }
+
+    /* ── LISTS ── */
+    ul.policy-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 16px;
+    }
+
+    ul.policy-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 15px;
+    }
+
+    ul.policy-list li:last-child { border-bottom: none; }
+
+    ul.policy-list li::before {
+      content: '›';
+      color: var(--brand-primary);
+      font-size: 18px;
+      font-weight: 700;
+      flex-shrink: 0;
+      line-height: 1.5;
+    }
+
+    ul.policy-list li strong { color: var(--brand-secondary); }
+
+    /* ── HIGHLIGHT BOX ── */
+    .highlight-box {
+      background: var(--brand-light);
+      border: 1px solid var(--brand-tertiary);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin: 20px 0;
+      font-size: 15px;
+    }
+
+    .highlight-box.warning {
+      background: #FFF8E6;
+      border-color: #E0A020;
+    }
+
+    .highlight-box.sensitive {
+      background: #FBEFF5;
+      border-color: #B23A72;
+    }
+
+    /* ── CONTACT TABLE ── */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 10px 20px;
+      margin: 16px 0;
+      font-size: 15px;
+    }
+
+    .contact-grid dt { font-weight: 700; color: var(--brand-secondary); }
+    .contact-grid dd { color: var(--text-main); }
+    .contact-grid a { color: var(--brand-primary); text-decoration: none; }
+    .contact-grid a:hover { text-decoration: underline; }
+
+    /* ── RIGHTS GRID ── */
+    .rights-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 14px;
+      margin: 20px 0;
+    }
+
+    .right-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+    }
+
+    .right-card .right-letter {
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--brand-primary);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .right-card h4 { font-size: 14px; font-weight: 700; color: var(--brand-secondary); margin-bottom: 4px; }
+    .right-card p { font-size: 13px; color: var(--text-muted); margin: 0; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--brand-secondary);
+      color: rgba(255,255,255,0.7);
+      text-align: center;
+      padding: 28px 24px;
+      font-size: 13px;
+    }
+
+    footer strong { color: white; }
+    footer a { color: #E9C9F0; text-decoration: none; }
+
+    /* ── BACK TO TOP ── */
+    .back-to-top {
+      display: inline-block;
+      margin-top: 32px;
+      color: var(--brand-primary);
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .back-to-top:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<!-- ── HEADER ──────────────────────────────────────────────────────────────── -->
+<header id="top">
+  <div class="logo-wrap">
+    <div class="logo-badge">V</div>
+    <span class="logo-text">VAK DEVI</span>
+  </div>
+  <h1>Política de Privacidad</h1>
+  <p class="header-meta">Última actualización: julio de 2026 &nbsp;·&nbsp; vakdevi.com</p>
+</header>
+
+<!-- ── MAIN ────────────────────────────────────────────────────────────────── -->
+<main class="container">
+
+  <!-- Intro -->
+  <div class="intro-card">
+    <strong>Aviso de Privacidad</strong> — En cumplimiento de la <strong>Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP)</strong> y de los lineamientos del <strong>INAI</strong>, Vak Devi pone a su disposición la presente Política de Privacidad. Al utilizar este sitio o solicitar nuestros servicios, usted acepta los términos aquí descritos.
+  </div>
+
+  <!-- TOC -->
+  <nav class="toc" aria-label="Índice de contenido">
+    <h2>Contenido</h2>
+    <ol>
+      <li><a href="#s1"><span class="toc-num">01</span> Introducción</a></li>
+      <li><a href="#s2"><span class="toc-num">02</span> Identidad del Responsable</a></li>
+      <li><a href="#s3"><span class="toc-num">03</span> Datos que Recopilamos</a></li>
+      <li><a href="#s4"><span class="toc-num">04</span> Finalidades del Tratamiento</a></li>
+      <li><a href="#s5"><span class="toc-num">05</span> Base Legal</a></li>
+      <li><a href="#s6"><span class="toc-num">06</span> Transferencia a Terceros</a></li>
+      <li><a href="#s7"><span class="toc-num">07</span> Cookies</a></li>
+      <li><a href="#s8"><span class="toc-num">08</span> Derechos ARCO</a></li>
+      <li><a href="#s9"><span class="toc-num">09</span> Medidas de Seguridad</a></li>
+      <li><a href="#s10"><span class="toc-num">10</span> Plazos de Conservación</a></li>
+      <li><a href="#s11"><span class="toc-num">11</span> Menores de Edad</a></li>
+      <li><a href="#s12"><span class="toc-num">12</span> Cambios a esta Política</a></li>
+      <li><a href="#s13"><span class="toc-num">13</span> Legislación y Jurisdicción</a></li>
+      <li><a href="#s14"><span class="toc-num">14</span> Contacto e INAI</a></li>
+    </ol>
+  </nav>
+
+  <!-- ── S1 ── -->
+  <section id="s1">
+    <h2 class="section-title"><span class="section-number">1</span> Introducción</h2>
+    <p><strong>Vak Devi</strong> es una consultoría de psicoterapia y desarrollo humano con domicilio en Mérida, Yucatán, México. La presente Política de Privacidad describe cómo recopilamos, usamos, almacenamos y protegemos los datos personales de quienes visitan o interactúan con nuestro sitio web <strong>vakdevi.com</strong> y con nuestros servicios de acompañamiento terapéutico.</p>
+    <p>Dada la naturaleza de nuestro trabajo, una parte de la información que tratamos corresponde a datos personales sensibles relacionados con la salud mental y el bienestar emocional. Esta Política explica también cómo protegemos ese tipo de información de forma reforzada.</p>
+    <p>Al utilizar nuestro Sitio o solicitar nuestros servicios, usted acepta los términos aquí descritos. Si no está de acuerdo con alguno de ellos, le rogamos que se abstenga de utilizar el Sitio.</p>
+  </section>
+
+  <!-- ── S2 ── -->
+  <section id="s2">
+    <h2 class="section-title"><span class="section-number">2</span> Identidad y Domicilio del Responsable</h2>
+    <p>El responsable del tratamiento de sus datos personales es:</p>
+    <dl class="contact-grid">
+      <dt>Nombre comercial</dt><dd>Vak Devi</dd>
+      <dt>Actividad</dt><dd>Consultoría de psicoterapia y desarrollo humano</dd>
+      <dt>Domicilio</dt><dd>Mérida, Yucatán, México</dd>
+      <dt>Sitio web</dt><dd><a href="https://vakdevi.com" target="_blank" rel="noopener">https://vakdevi.com</a></dd>
+      <dt>Correo electrónico</dt><dd><a href="mailto:contacto@vakdevi.com">contacto@vakdevi.com</a></dd>
+    </dl>
+  </section>
+
+  <!-- ── S3 ── -->
+  <section id="s3">
+    <h2 class="section-title"><span class="section-number">3</span> Datos Personales que Recopilamos</h2>
+
+    <h3>3.1 Datos de identificación y contacto</h3>
+    <ul class="policy-list">
+      <li>Nombre y apellidos</li>
+      <li>Dirección de correo electrónico</li>
+      <li>Número de teléfono o WhatsApp</li>
+    </ul>
+
+    <h3>3.2 Datos de navegación y uso del Sitio</h3>
+    <ul class="policy-list">
+      <li>Dirección IP y tipo de navegador</li>
+      <li>Páginas visitadas y tiempo de permanencia</li>
+      <li>Origen del tráfico (búsqueda orgánica, redes sociales, etc.)</li>
+      <li>Dispositivo y sistema operativo utilizado</li>
+    </ul>
+
+    <h3>3.3 Datos proporcionados al agendar una sesión</h3>
+    <p>Cuando utiliza nuestro formulario de agendamiento en línea, recopilamos:</p>
+    <ul class="policy-list">
+      <li>Nombre, correo electrónico y teléfono de contacto</li>
+      <li>Servicio de su interés (por ejemplo, sesión exploratoria, psicoterapia, evaluación EQ-i 2.0)</li>
+      <li>Fecha y horario preferidos para la sesión</li>
+    </ul>
+    <p>El formulario del Sitio no solicita información sobre el motivo de consulta ni datos de salud; esa información se comparte únicamente durante las sesiones, como se describe a continuación.</p>
+
+    <h3>3.4 Datos relacionados con el proceso terapéutico</h3>
+    <p>Como parte esencial de la relación terapéutica, y siempre en el marco de sus sesiones (presenciales o en línea, nunca a través de formularios del Sitio), podemos recabar datos personales sensibles, tales como:</p>
+    <ul class="policy-list">
+      <li>Motivo de consulta e historial personal o familiar relevante para el acompañamiento</li>
+      <li>Información sobre su estado emocional y psicológico</li>
+      <li>Resultados de instrumentos aplicados en sesión, como la evaluación de Inteligencia Emocional EQ-i 2.0, cuando corresponda</li>
+      <li>Notas de seguimiento del proceso, registradas en nuestro sistema interno de gestión de la práctica</li>
+    </ul>
+
+    <div class="highlight-box sensitive">
+      <strong>Datos sensibles:</strong> a diferencia de una empresa de tecnología convencional, Vak Devi sí recopila datos personales sensibles (datos de salud mental) como parte necesaria de la relación terapéutica. Este tratamiento se realiza únicamente con su <strong>consentimiento expreso y por escrito</strong>, conforme al artículo 9 de la LFPDPPP, y se limita a la información necesaria para brindarle un acompañamiento adecuado.
+    </div>
+  </section>
+
+  <!-- ── S4 ── -->
+  <section id="s4">
+    <h2 class="section-title"><span class="section-number">4</span> Finalidades del Tratamiento</h2>
+
+    <h3>4.1 Finalidades primarias — necesarias para la prestación del servicio</h3>
+    <ul class="policy-list">
+      <li>Atender solicitudes de información sobre nuestros servicios de psicoterapia, coaching y desarrollo humano</li>
+      <li>Agendar, confirmar y dar seguimiento a sus sesiones, incluida la sesión exploratoria gratuita</li>
+      <li>Brindar el servicio terapéutico contratado y mantener el expediente correspondiente a su proceso</li>
+      <li>Emitir recibos y gestionar cobros</li>
+    </ul>
+
+    <h3>4.2 Finalidades secundarias — puede oponerse a estas</h3>
+    <ul class="policy-list">
+      <li>Envío de contenido informativo o de bienestar relacionado con nuestros servicios</li>
+      <li>Realización de encuestas de satisfacción</li>
+      <li>Difusión de contenido educativo en redes sociales, siempre sin datos que permitan identificarlo, salvo autorización expresa y por escrito de su parte</li>
+      <li>Análisis estadísticos internos para mejorar nuestros servicios</li>
+    </ul>
+
+    <div class="highlight-box warning">
+      Si usted no desea que sus datos sean tratados para las finalidades secundarias, envíe un correo a <a href="mailto:contacto@vakdevi.com"><strong>contacto@vakdevi.com</strong></a> con el asunto <em>"Oposición a finalidades secundarias"</em>.
+    </div>
+  </section>
+
+  <!-- ── S5 ── -->
+  <section id="s5">
+    <h2 class="section-title"><span class="section-number">5</span> Base Legal del Tratamiento</h2>
+    <ul class="policy-list">
+      <li><strong>Consentimiento:</strong> Cuando usted nos contacta, completa el formulario de agendamiento o acepta expresamente esta política</li>
+      <li><strong>Consentimiento expreso y por escrito:</strong> Para el tratamiento de datos personales sensibles relacionados con su proceso terapéutico, recabado antes de iniciar el acompañamiento</li>
+      <li><strong>Ejecución de la relación de servicio:</strong> Cuando el tratamiento es necesario para brindarle el acompañamiento contratado</li>
+      <li><strong>Obligación legal:</strong> Cuando la ley mexicana nos obliga a conservar ciertos registros (fiscales, contables, etc.)</li>
+      <li><strong>Interés legítimo:</strong> Para el análisis de seguridad del Sitio y prevención del fraude</li>
+    </ul>
+  </section>
+
+  <!-- ── S6 ── -->
+  <section id="s6">
+    <h2 class="section-title"><span class="section-number">6</span> Transferencia de Datos a Terceros</h2>
+    <p>Vak Devi puede compartir sus datos con las siguientes categorías de terceros, siempre bajo estrictos acuerdos de confidencialidad:</p>
+    <ul class="policy-list">
+      <li><strong>Infraestructura propia:</strong> Sus datos se almacenan en nuestra propia infraestructura de servidores (autoalojada), sin depender de proveedores externos de bases de datos en la nube</li>
+      <li><strong>Proveedor de correo transaccional:</strong> Resend, utilizado exclusivamente para el envío de confirmaciones y recordatorios de sus sesiones</li>
+      <li><strong>Plataformas de mensajería:</strong> WhatsApp, para la comunicación directa relacionada con su proceso</li>
+      <li><strong>Contadores y asesores legales:</strong> Únicamente para cumplir obligaciones fiscales o legales</li>
+      <li><strong>Autoridades competentes:</strong> Cuando así lo exija la ley mexicana</li>
+    </ul>
+    <div class="highlight-box">
+      <strong>Vak Devi no vende, renta ni comercializa sus datos personales a terceros con fines publicitarios.</strong> La información compartida durante sus sesiones nunca se transfiere a terceros sin su consentimiento expreso, salvo obligación legal.
+    </div>
+  </section>
+
+  <!-- ── S7 ── -->
+  <section id="s7">
+    <h2 class="section-title"><span class="section-number">7</span> Uso de Cookies y Tecnologías de Rastreo</h2>
+    <p>Nuestro Sitio puede utilizar cookies y tecnologías similares para mejorar su experiencia de navegación:</p>
+    <ul class="policy-list">
+      <li><strong>Cookies estrictamente necesarias:</strong> Imprescindibles para el funcionamiento básico del Sitio y del formulario de agendamiento. No requieren consentimiento</li>
+      <li><strong>Cookies analíticas:</strong> Nos permiten entender cómo los usuarios navegan el Sitio (por ejemplo, mediante Google Analytics). Requieren su consentimiento</li>
+      <li><strong>Cookies de preferencias:</strong> Recuerdan sus preferencias de idioma o región</li>
+    </ul>
+    <p>Puede gestionar o deshabilitar las cookies desde la configuración de su navegador. Para el detalle completo de las cookies que utilizamos, consulte nuestra <strong>Política de Cookies</strong>, disponible en el pie de página del Sitio.</p>
+  </section>
+
+  <!-- ── S8 ── -->
+  <section id="s8">
+    <h2 class="section-title"><span class="section-number">8</span> Derechos ARCO y Cómo Ejercerlos</h2>
+    <p>De conformidad con la LFPDPPP, usted tiene los siguientes derechos:</p>
+
+    <div class="rights-grid">
+      <div class="right-card">
+        <div class="right-letter">A</div>
+        <h4>Acceso</h4>
+        <p>Conocer qué datos tenemos sobre usted, para qué los usamos y las condiciones del tratamiento</p>
+      </div>
+      <div class="right-card">
+        <div class="right-letter">R</div>
+        <h4>Rectificación</h4>
+        <p>Solicitar la corrección de sus datos cuando sean inexactos o incompletos</p>
+      </div>
+      <div class="right-card">
+        <div class="right-letter">C</div>
+        <h4>Cancelación</h4>
+        <p>Solicitar que sus datos sean eliminados o bloqueados cuando no sean necesarios para las finalidades declaradas</p>
+      </div>
+      <div class="right-card">
+        <div class="right-letter">O</div>
+        <h4>Oposición</h4>
+        <p>Oponerse al tratamiento de sus datos para finalidades secundarias o específicas</p>
+      </div>
+    </div>
+
+    <p>Adicionalmente, puede solicitar la <strong>revocación de su consentimiento</strong> y la <strong>portabilidad</strong> de sus datos en formato estructurado.</p>
+
+    <h3>Procedimiento para ejercer sus derechos</h3>
+    <p>Envíe un correo a <a href="mailto:contacto@vakdevi.com"><strong>contacto@vakdevi.com</strong></a> con el asunto <em>"Solicitud ARCO"</em>, incluyendo:</p>
+    <ul class="policy-list">
+      <li>Nombre completo y datos de contacto</li>
+      <li>Descripción clara del derecho que desea ejercer</li>
+      <li>Documento que acredite su identidad (INE, pasaporte u otro documento oficial)</li>
+    </ul>
+    <div class="highlight-box">
+      Daremos respuesta a su solicitud en un plazo máximo de <strong>20 días hábiles</strong> contados a partir de su recepción, conforme a lo establecido en la LFPDPPP.
+    </div>
+  </section>
+
+  <!-- ── S9 ── -->
+  <section id="s9">
+    <h2 class="section-title"><span class="section-number">9</span> Medidas de Seguridad</h2>
+    <p>Vak Devi implementa medidas técnicas, administrativas y físicas para proteger sus datos personales, con especial cuidado dado el carácter sensible de la información que tratamos:</p>
+    <ul class="policy-list">
+      <li>Cifrado SSL/TLS en todas las comunicaciones del Sitio</li>
+      <li>Alojamiento en infraestructura propia, con acceso restringido y autenticación reforzada</li>
+      <li>Control de acceso basado en roles, limitado exclusivamente al personal autorizado</li>
+      <li>Revisiones periódicas de seguridad de la infraestructura</li>
+      <li>Acuerdos de confidencialidad con todos los proveedores que acceden a datos</li>
+    </ul>
+    <div class="highlight-box sensitive">
+      <strong>Secreto profesional:</strong> además de estas medidas técnicas, el contenido de sus sesiones terapéuticas está protegido por el secreto profesional que rige el ejercicio de la psicoterapia — una garantía ética adicional a las obligaciones legales de protección de datos aquí descritas.
+    </div>
+  </section>
+
+  <!-- ── S10 ── -->
+  <section id="s10">
+    <h2 class="section-title"><span class="section-number">10</span> Plazos de Conservación de los Datos</h2>
+    <ul class="policy-list">
+      <li><strong>Datos de contacto y pacientes activos:</strong> Durante la vigencia de la relación terapéutica y hasta 3 años después de su término</li>
+      <li><strong>Expedientes y notas del proceso terapéutico:</strong> Conforme a las buenas prácticas de la profesión, un mínimo de 5 años tras la conclusión del proceso, salvo que la normativa aplicable exija un plazo distinto</li>
+      <li><strong>Datos fiscales y contables:</strong> 5 años, conforme al Código Fiscal de la Federación</li>
+      <li><strong>Datos del formulario de agendamiento sin sesión concretada:</strong> 12 meses</li>
+      <li><strong>Datos de navegación:</strong> Hasta 26 meses</li>
+    </ul>
+  </section>
+
+  <!-- ── S11 ── -->
+  <section id="s11">
+    <h2 class="section-title"><span class="section-number">11</span> Menores de Edad</h2>
+    <p>Nuestros servicios pueden brindarse a personas menores de edad únicamente con el consentimiento informado y la participación activa de sus padres o tutores legales. El formulario de agendamiento del Sitio no está diseñado para ser utilizado directamente por un menor sin la supervisión de un adulto responsable. Si detectamos que se han recopilado datos de un menor sin el consentimiento correspondiente, procederemos a eliminarlos de inmediato.</p>
+  </section>
+
+  <!-- ── S12 ── -->
+  <section id="s12">
+    <h2 class="section-title"><span class="section-number">12</span> Cambios a esta Política de Privacidad</h2>
+    <p>Vak Devi se reserva el derecho de modificar la presente Política en cualquier momento para adaptarla a cambios legislativos, jurisprudenciales o de negocio. Cualquier modificación será comunicada mediante la publicación de la versión actualizada en este Sitio, con indicación de la fecha de última actualización. El uso continuado del Sitio tras la publicación de cambios implica la aceptación de los mismos.</p>
+  </section>
+
+  <!-- ── S13 ── -->
+  <section id="s13">
+    <h2 class="section-title"><span class="section-number">13</span> Legislación Aplicable y Jurisdicción</h2>
+    <p>Esta Política de Privacidad se rige por la legislación mexicana aplicable, en particular:</p>
+    <ul class="policy-list">
+      <li>Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP)</li>
+      <li>Reglamento de la LFPDPPP</li>
+      <li>Lineamientos del Aviso de Privacidad publicados por el INAI</li>
+    </ul>
+    <p>Para cualquier controversia derivada de esta Política, las partes se someten a la jurisdicción de los tribunales competentes de <strong>Mérida, Yucatán, México</strong>, renunciando a cualquier otro fuero que pudiera corresponderles.</p>
+  </section>
+
+  <!-- ── S14 ── -->
+  <section id="s14">
+    <h2 class="section-title"><span class="section-number">14</span> Contacto y Quejas ante el INAI</h2>
+    <p>Para cualquier duda, solicitud o queja relacionada con el tratamiento de sus datos personales, contáctenos en:</p>
+    <dl class="contact-grid">
+      <dt>Correo</dt><dd><a href="mailto:contacto@vakdevi.com">contacto@vakdevi.com</a></dd>
+      <dt>Sitio web</dt><dd><a href="https://vakdevi.com" target="_blank" rel="noopener">https://vakdevi.com</a></dd>
+    </dl>
+    <div class="highlight-box">
+      Si considera que su solicitud no fue atendida satisfactoriamente, puede acudir ante el <strong>Instituto Nacional de Transparencia, Acceso a la Información y Protección de Datos Personales (INAI)</strong>: <a href="https://home.inai.org.mx" target="_blank" rel="noopener">https://home.inai.org.mx</a>
+    </div>
+
+    <a href="#top" class="back-to-top">↑ Volver al inicio</a>
+  </section>
+
+</main>
+
+<!-- ── FOOTER ───────────────────────────────────────────────────────────────── -->
+<footer>
+  <p><strong>Vak Devi</strong> – Psicoterapia y Desarrollo Humano</p>
+  <p style="margin-top:6px;">Mérida, Yucatán, México &nbsp;·&nbsp; <a href="mailto:contacto@vakdevi.com">contacto@vakdevi.com</a> &nbsp;·&nbsp; <a href="https://vakdevi.com">vakdevi.com</a></p>
+  <p style="margin-top:10px;">© 2026 Vak Devi. Todos los derechos reservados.</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" fill="none">
+  <circle cx="300" cy="300" r="290" fill="#8B1EA0"/>
+
+  <!-- inner double ring with dotted gaps top/bottom -->
+  <path d="M 379.34 82.19 A 232 232 0 0 1 379.34 517.81" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round"/>
+  <path d="M 220.66 517.81 A 232 232 0 0 1 220.66 82.19" stroke="#FFFFFF" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="259.72" cy="68.6" r="6.5" fill="#FFFFFF"/>
+  <circle cx="300" cy="65" r="6.5" fill="#FFFFFF"/>
+  <circle cx="340.28" cy="68.6" r="6.5" fill="#FFFFFF"/>
+  <circle cx="340.28" cy="531.4" r="6.5" fill="#FFFFFF"/>
+  <circle cx="300" cy="535" r="6.5" fill="#FFFFFF"/>
+  <circle cx="259.72" cy="531.4" r="6.5" fill="#FFFFFF"/>
+
+  <!-- meditating figure: head loop -->
+  <circle cx="300" cy="180" r="42" stroke="#FFFFFF" stroke-width="7"/>
+
+  <!-- robe / shoulders triangle -->
+  <path d="M 300 222 L 210 355" stroke="#FFFFFF" stroke-width="7" stroke-linecap="round"/>
+  <path d="M 300 222 L 390 355" stroke="#FFFFFF" stroke-width="7" stroke-linecap="round"/>
+
+  <!-- inner vesica (mudra) motif -->
+  <circle cx="300" cy="300" r="5" fill="#FFFFFF"/>
+  <path d="M 300 300 C 270 308 258 318 262 328 C 258 340 275 350 300 355"
+        stroke="#FFFFFF" stroke-width="6.5" stroke-linejoin="round"/>
+  <path d="M 300 300 C 330 308 342 318 338 328 C 342 340 325 350 300 355"
+        stroke="#FFFFFF" stroke-width="6.5" stroke-linejoin="round"/>
+
+  <!-- sparkle / star -->
+  <path d="M 300 365 Q 314 379 322 387 Q 314 395 300 409 Q 286 395 278 387 Q 286 379 300 365 Z"
+        stroke="#FFFFFF" stroke-width="6" stroke-linejoin="round"/>
+
+  <!-- stem -->
+  <path d="M 300 409 L 300 422" stroke="#FFFFFF" stroke-width="7" stroke-linecap="round"/>
+
+  <!-- lotus petals: outer leaf curve + inner vein -->
+  <path d="M 300 422 C 240 428 185 440 180 460 C 185 468 240 475 300 478"
+        stroke="#FFFFFF" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 290 468 C 260 462 230 455 205 452"
+        stroke="#FFFFFF" stroke-width="5.5" stroke-linecap="round"/>
+  <path d="M 300 422 C 360 428 415 440 420 460 C 415 468 360 475 300 478"
+        stroke="#FFFFFF" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M 310 468 C 340 462 370 455 395 452"
+        stroke="#FFFFFF" stroke-width="5.5" stroke-linecap="round"/>
+</svg>

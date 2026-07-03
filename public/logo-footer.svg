@@ -1,0 +1,70 @@
+<svg width="680" height="580" viewBox="0 0 680 580" role="img" xmlns="http://www.w3.org/2000/svg">
+  <title>Logo Vāk Devi</title>
+  <desc>Logo Vāk Devi — Encuentra tu ser, habita tu vida</desc>
+
+  <defs>
+    <style>
+      .wordmark { font-family: 'Georgia', 'Times New Roman', serif; font-size: 44px; font-weight: 400; letter-spacing: 10px; fill: #ffffff; }
+      .tagline  { font-family: 'Georgia', 'Times New Roman', serif; font-size: 15.5px; font-weight: 400; letter-spacing: 2px; fill: rgba(255,255,255,0.75); font-style: italic; }
+      .icon-stroke { fill: none; stroke: #ffffff; stroke-linecap: round; stroke-linejoin: round; }
+    </style>
+  </defs>
+
+  <!-- Círculo exterior principal morado -->
+  <circle cx="340" cy="220" r="178" fill="#8B1EA0" />
+
+  <!-- Anillo interior decorativo doble -->
+  <circle cx="340" cy="220" r="165" fill="none" stroke="#ffffff" stroke-width="1.5" opacity="0.5" />
+  <circle cx="340" cy="220" r="158" fill="none" stroke="#ffffff" stroke-width="0.7" opacity="0.25" />
+
+  <!-- Puntos decorativos arriba -->
+  <circle cx="323" cy="57"  r="3.5" fill="#ffffff" opacity="0.75" />
+  <circle cx="340" cy="52"  r="3.5" fill="#ffffff" opacity="0.75" />
+  <circle cx="357" cy="57"  r="3.5" fill="#ffffff" opacity="0.75" />
+
+  <!-- Puntos decorativos abajo -->
+  <circle cx="323" cy="383" r="3.5" fill="#ffffff" opacity="0.75" />
+  <circle cx="340" cy="388" r="3.5" fill="#ffffff" opacity="0.75" />
+  <circle cx="357" cy="383" r="3.5" fill="#ffffff" opacity="0.75" />
+
+  <!-- Cabeza -->
+  <circle cx="340" cy="118" r="22" fill="none" stroke="#ffffff" stroke-width="2.8" />
+
+  <!-- Lazo / nudo cuello -->
+  <path d="M329 140 C318 155 318 172 329 180 C338 186 342 186 351 180 C362 172 362 155 351 140" class="icon-stroke" stroke-width="2.4" />
+
+  <!-- Torso / cuerpo en meditación -->
+  <path d="M329 180 L298 218 Q294 230 303 237 L340 258 L377 237 Q386 230 382 218 L351 180" class="icon-stroke" stroke-width="2.4" />
+
+  <!-- Diamante central -->
+  <path d="M340 210 L351 224 L340 238 L329 224 Z" fill="#ffffff" opacity="0.95" />
+  <path d="M340 210 L344 224 L340 238 L336 224 Z" fill="#ffffff" opacity="0.3" />
+
+  <!-- Hoja izquierda -->
+  <path d="M298 230 Q260 222 254 250 Q266 276 298 264 Q314 250 303 232 Z" class="icon-stroke" stroke-width="2.4" />
+
+  <!-- Hoja derecha -->
+  <path d="M382 230 Q420 222 426 250 Q414 276 382 264 Q366 250 377 232 Z" class="icon-stroke" stroke-width="2.4" />
+
+  <!-- Pétalo loto central inferior -->
+  <path d="M322 264 Q313 292 340 302 Q367 292 358 264" class="icon-stroke" stroke-width="2.4" />
+
+  <!-- Pétalo loto izquierdo -->
+  <path d="M306 258 Q288 282 312 296" class="icon-stroke" stroke-width="1.8" opacity="0.75" />
+
+  <!-- Pétalo loto derecho -->
+  <path d="M374 258 Q392 282 368 296" class="icon-stroke" stroke-width="1.8" opacity="0.75" />
+
+  <!-- Línea decorativa superior -->
+  <line x1="160" y1="432" x2="520" y2="432" stroke="rgba(255,255,255,0.3)" stroke-width="0.8" />
+
+  <!-- Nombre principal -->
+  <text x="340" y="480" class="wordmark" text-anchor="middle">VĀK DEVI</text>
+
+  <!-- Línea decorativa inferior -->
+  <line x1="160" y1="495" x2="520" y2="495" stroke="rgba(255,255,255,0.3)" stroke-width="0.8" />
+
+  <!-- Tagline -->
+  <text x="340" y="530" class="tagline" text-anchor="middle">Encuentra tu ser, habita tu vida</text>
+
+</svg>
