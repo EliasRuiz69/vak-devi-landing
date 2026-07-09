@@ -147,6 +147,23 @@ export async function toggleServiceActive(id: string, activo: boolean): Promise<
   revalidatePath("/agendar");
 }
 
+export async function reorderServices(
+  updates: { id: string; orden: number }[],
+): Promise<ServiceFormState> {
+  await assertAdmin();
+  const admin = createAdminClient();
+  const results = await Promise.all(
+    updates.map(({ id, orden }) =>
+      admin.from("services").update({ orden }).eq("id", id),
+    ),
+  );
+  const failed = results.find((r) => r.error);
+  if (failed?.error) return { error: failed.error.message, success: false };
+  revalidatePath("/admin/servicios");
+  revalidatePath("/agendar");
+  return { error: null, success: true };
+}
+
 // ── Configuración de horario ────────────────────────────────────
 
 export type ScheduleData = {

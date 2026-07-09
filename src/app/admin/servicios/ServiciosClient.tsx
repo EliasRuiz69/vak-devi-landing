@@ -1,11 +1,29 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useEffect, useTransition } from "react";
 import { useRouter } from "next/navigation";
+import {
+  DndContext,
+  PointerSensor,
+  KeyboardSensor,
+  useSensor,
+  useSensors,
+  closestCenter,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  arrayMove,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import {
   updateService,
   createService,
   toggleServiceActive,
+  reorderServices,
   type ServiceData,
 } from "@/app/actions/admin";
 import type { ServiceRow } from "./page";
@@ -16,6 +34,18 @@ export default function ServiciosClient({ services }: { services: ServiceRow[] }
   const [editingId, setEditingId] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [orderedServices, setOrderedServices] = useState<ServiceRow[]>(services);
+  const [toast, setToast] = useState<string | null>(null);
+
+  // Sync local order when server data refreshes
+  useEffect(() => {
+    setOrderedServices(services);
+  }, [services]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
 
   function refresh() {
     startTransition(() => { router.refresh(); });
@@ -42,6 +72,31 @@ export default function ServiciosClient({ services }: { services: ServiceRow[] }
     refresh();
   }
 
+  function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    setOrderedServices((prev) => {
+      const oldIndex = prev.findIndex((s) => s.id === active.id);
+      const newIndex = prev.findIndex((s) => s.id === over.id);
+      const reordered = arrayMove(prev, oldIndex, newIndex);
+
+      const updates = reordered.map((s, i) => ({ id: s.id, orden: i + 1 }));
+      reorderServices(updates).then((res) => {
+        if (res.error) {
+          setError(`Error al guardar el orden: ${res.error}`);
+        } else {
+          setToast("Orden guardado");
+          setTimeout(() => setToast(null), 2500);
+        }
+      });
+
+      return reordered;
+    });
+  }
+
+  const draggable = !editingId && !creating;
+
   return (
     <div className={`flex flex-col gap-4 transition-opacity ${isPending ? "opacity-60" : ""}`}>
       {error && (
@@ -50,23 +105,43 @@ export default function ServiciosClient({ services }: { services: ServiceRow[] }
         </div>
       )}
 
-      {services.map((svc) =>
-        editingId === svc.id ? (
-          <ServiceForm
-            key={svc.id}
-            initial={svc}
-            onSave={(data) => handleSave(svc.id, { ...data, activo: svc.activo })}
-            onCancel={() => setEditingId(null)}
-          />
-        ) : (
-          <ServiceCard
-            key={svc.id}
-            svc={svc}
-            onEdit={() => setEditingId(svc.id)}
-            onToggle={() => handleToggle(svc.id, !svc.activo)}
-          />
-        ),
+      {toast && (
+        <div className="rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-2.5 text-sm text-emerald-700">
+          ✓ {toast}
+        </div>
       )}
+
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext
+          items={orderedServices.map((s) => s.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          <div className="flex flex-col gap-4">
+            {orderedServices.map((svc) =>
+              editingId === svc.id ? (
+                <ServiceForm
+                  key={svc.id}
+                  initial={svc}
+                  onSave={(data) => handleSave(svc.id, { ...data, activo: svc.activo })}
+                  onCancel={() => setEditingId(null)}
+                />
+              ) : (
+                <SortableServiceCard
+                  key={svc.id}
+                  svc={svc}
+                  onEdit={() => setEditingId(svc.id)}
+                  onToggle={() => handleToggle(svc.id, !svc.activo)}
+                  draggable={draggable}
+                />
+              ),
+            )}
+          </div>
+        </SortableContext>
+      </DndContext>
 
       {creating ? (
         <ServiceForm
@@ -85,22 +160,96 @@ export default function ServiciosClient({ services }: { services: ServiceRow[] }
   );
 }
 
-function ServiceCard({
+// ─── Sortable card wrapper ────────────────────────────────────────────────────
+
+function SortableServiceCard({
   svc,
   onEdit,
   onToggle,
+  draggable,
 }: {
   svc: ServiceRow;
   onEdit: () => void;
   onToggle: () => void;
+  draggable: boolean;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    setActivatorNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: svc.id, disabled: !draggable });
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.45 : 1,
+        zIndex: isDragging ? 10 : undefined,
+        position: isDragging ? "relative" : undefined,
+      }}
+    >
+      <ServiceCard
+        svc={svc}
+        onEdit={onEdit}
+        onToggle={onToggle}
+        handleRef={(el) => setActivatorNodeRef(el)}
+        handleListeners={listeners as React.HTMLAttributes<HTMLButtonElement>}
+        handleAttributes={attributes as React.HTMLAttributes<HTMLButtonElement>}
+        draggable={draggable}
+      />
+    </div>
+  );
+}
+
+// ─── Service card ─────────────────────────────────────────────────────────────
+
+function ServiceCard({
+  svc,
+  onEdit,
+  onToggle,
+  handleRef,
+  handleListeners,
+  handleAttributes,
+  draggable,
+}: {
+  svc: ServiceRow;
+  onEdit: () => void;
+  onToggle: () => void;
+  handleRef?: (el: HTMLButtonElement | null) => void;
+  handleListeners?: React.HTMLAttributes<HTMLButtonElement>;
+  handleAttributes?: React.HTMLAttributes<HTMLButtonElement>;
+  draggable?: boolean;
 }) {
   return (
     <div
-      className={`rounded-2xl border bg-white px-5 py-4 transition-opacity ${
+      className={`flex items-stretch rounded-2xl border bg-white transition-opacity ${
         svc.activo ? "border-ink/10" : "border-ink/5 opacity-55"
       }`}
     >
-      <div className="flex items-start justify-between gap-4">
+      {/* Drag handle */}
+      <button
+        ref={handleRef}
+        {...handleListeners}
+        {...handleAttributes}
+        type="button"
+        aria-label="Arrastrar para reordenar"
+        className={`flex items-center rounded-l-2xl border-r border-ink/8 px-3 text-ink/20 transition-colors ${
+          draggable
+            ? "touch-none cursor-grab hover:bg-purple-1/5 hover:text-purple-2 active:cursor-grabbing"
+            : "cursor-default opacity-30"
+        }`}
+      >
+        <GripIcon />
+      </button>
+
+      {/* Card content */}
+      <div className="flex flex-1 items-start justify-between gap-4 px-5 py-4">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2 mb-1">
             <span className="font-serif text-base text-ink">{svc.nombre}</span>
@@ -146,6 +295,21 @@ function ServiceCard({
     </div>
   );
 }
+
+function GripIcon() {
+  return (
+    <svg width="12" height="18" viewBox="0 0 12 18" fill="currentColor" aria-hidden>
+      <circle cx="3.5" cy="4" r="1.4" />
+      <circle cx="3.5" cy="9" r="1.4" />
+      <circle cx="3.5" cy="14" r="1.4" />
+      <circle cx="8.5" cy="4" r="1.4" />
+      <circle cx="8.5" cy="9" r="1.4" />
+      <circle cx="8.5" cy="14" r="1.4" />
+    </svg>
+  );
+}
+
+// ─── Service form (unchanged) ─────────────────────────────────────────────────
 
 type FormData = Omit<ServiceData, "activo">;
 
