@@ -8,6 +8,7 @@ const NAV_LINKS = [
   { href: "#proposito", label: "Propósito" },
   { href: "#servicios", label: "Servicios" },
   { href: "#para-quien", label: "Para quién" },
+  { href: "#quien-te-acompana", label: "Quién te acompaña" },
 ];
 
 export default function Header() {
