@@ -4,6 +4,7 @@ import Hero from "@/components/hero/Hero";
 import Purpose from "@/components/sections/Purpose";
 import ServicesSection from "@/components/sections/ServicesSection";
 import ForWhom from "@/components/sections/ForWhom";
+import AboutTherapist from "@/components/sections/AboutTherapist";
 import FinalCTA from "@/components/sections/FinalCTA";
 
 export default function Home() {
@@ -15,6 +16,7 @@ export default function Home() {
         <Purpose />
         <ServicesSection />
         <ForWhom />
+        <AboutTherapist />
         <FinalCTA />
       </main>
       <Footer />
