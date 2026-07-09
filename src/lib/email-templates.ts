@@ -186,7 +186,7 @@ export function appointmentNotificationHtml(data: AppointmentNotifData) {
               ${data.motivo ? row("Motivo", data.motivo, true) : ""}
             </table>
             <div style="margin-top:32px;text-align:center;">
-              <a href="https://supabase.ervia.tech" style="display:inline-block;background:#8B1EA0;color:#ffffff;font-size:13px;letter-spacing:2px;text-decoration:none;padding:14px 32px;border-radius:40px;">
+              <a href="https://www.vakdevi-psicoterapia.com/admin/dashboard" style="display:inline-block;background:#8B1EA0;color:#ffffff;font-size:13px;letter-spacing:2px;text-decoration:none;padding:14px 32px;border-radius:40px;">
                 Ver en panel de administración
               </a>
             </div>
