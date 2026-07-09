@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Image from "next/image";
 import { gsap } from "@/lib/gsap";
 import RevealText from "@/components/ui/RevealText";
 
@@ -95,25 +96,17 @@ export default function AboutTherapist() {
         {/* ── Two-column: photo + opening bio ── */}
         <div className="grid gap-16 lg:grid-cols-[2fr_3fr] lg:gap-24">
 
-          {/* Photo placeholder */}
+          {/* Photo */}
           <div data-reveal className="flex items-start justify-center lg:justify-start">
-            <div className="aspect-[3/4] w-full max-w-[280px] overflow-hidden rounded-2xl border border-purple-3/25 bg-white shadow-sm lg:max-w-full">
-              <div className="flex h-full flex-col items-center justify-center gap-4 px-6 py-8">
-                <div className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-purple-3/40">
-                  <svg
-                    viewBox="0 0 24 24"
-                    className="h-8 w-8 text-purple-3"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    aria-hidden
-                  >
-                    <circle cx="12" cy="8" r="4" />
-                    <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" strokeLinecap="round" />
-                  </svg>
-                </div>
-                <p className="text-center text-sm text-purple-2/50">Foto de Ámbar</p>
-              </div>
+            <div className="relative aspect-[3/4] w-full max-w-[280px] overflow-hidden rounded-2xl shadow-sm lg:max-w-full">
+              <Image
+                src="/FotoTerapeutav1.jpeg"
+                alt="Ámbar Escalante"
+                fill
+                className="object-cover object-top"
+                sizes="(max-width: 1024px) 280px, 33vw"
+                priority
+              />
             </div>
           </div>
 
@@ -260,7 +253,7 @@ export default function AboutTherapist() {
             Agenda tu sesión exploratoria gratuita
           </a>
           <a
-            href="mailto:ambarescalantediaz@gmail.com"
+            href="mailto:conversemos@vakdevi-psicoterapia.com"
             className="inline-flex items-center justify-center rounded-full border border-purple-1 px-8 py-4 text-sm tracking-wide text-purple-1 transition-colors duration-300 hover:bg-purple-1 hover:text-white sm:text-base"
           >
             Escríbeme
