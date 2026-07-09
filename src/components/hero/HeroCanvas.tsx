@@ -132,5 +132,5 @@ export default function HeroCanvas({ image1, image2, onReady }: HeroCanvasProps)
     };
   }, [image1, image2, onReady]);
 
-  return <canvas ref={canvasRef} className="absolute inset-0 h-full w-full" />;
+  return <canvas ref={canvasRef} className="absolute inset-0 h-full w-full pointer-events-none" />;
 }

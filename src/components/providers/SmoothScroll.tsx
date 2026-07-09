@@ -46,7 +46,7 @@ export default function SmoothScroll({
       lenis.destroy();
       lenisRef.current = null;
     };
-  }, []);
+  }, [pathname]);
 
   return <>{children}</>;
 }

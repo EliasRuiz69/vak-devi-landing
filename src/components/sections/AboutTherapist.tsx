@@ -6,8 +6,8 @@ import RevealText from "@/components/ui/RevealText";
 
 const CREDENTIALS = [
   "Maestría en Psicoterapia Ericksoniana — Centro Ericksoniano de México (CEM)",
-  "Diplomada en Constelaciones Familiares Ericksonianas",
-  "Evaluadora certificada EQ-i 2.0 · EQ-360",
+  "Diplomada en Constelaciones Familiares Ericksonianas (CEM)",
+  "Evaluadora certificada EQ-i 2.0 · EQ-360  /  Coach en Inteligencia Emocional (MHS)",
   "Capacitadora y tallerista en educación y crecimiento humano",
 ];
 
@@ -219,7 +219,15 @@ export default function AboutTherapist() {
               as="p"
               className="font-serif text-base italic leading-relaxed text-ink/65 sm:text-lg"
             >
-              Mi camino ha sido diverso y profundo: la Danza, la Educación Ambiental, la Inteligencia Emocional y la Inteligencia Espiritual, formaciones que nutren mi mirada sobre el ser humano en su relación con el cuerpo, la naturaleza y el entorno. A esto se suman años de estudio y práctica del Budismo, el Tantra de Sri Vidya y la Ontogonía, caminos que han profundizado mi comprensión de la dimensión trascendental como parte esencial de quienes somos.
+              Mi camino ha sido diverso y profundo: la Danza, la Educación Ambiental, la Inteligencia Emocional y la Inteligencia Espiritual, formaciones que nutren mi mirada sobre el ser humano en su relación con el cuerpo, la naturaleza y el entorno.
+            </RevealText>
+
+            <RevealText
+              as="p"
+              delay={0.08}
+              className="font-serif text-base italic leading-relaxed text-ink/65 sm:text-lg"
+            >
+              A esto se suman años de estudio y práctica de filosofías y tradiciones espirituales de Oriente y Occidente: Cristianismo, Budismo, Shri Vidya, Ontogonía y Chamanismo. Caminos distintos que convergen en una misma comprensión: la dimensión trascendental es parte esencial de quienes somos.
             </RevealText>
 
             <RevealText
