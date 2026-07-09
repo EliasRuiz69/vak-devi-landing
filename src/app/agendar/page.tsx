@@ -51,11 +51,19 @@ export default async function AgendarPage() {
   return (
     <div className="min-h-screen bg-lavender">
       {/* Header */}
-      <header className="border-b border-ink/8 bg-white/60 px-6 py-4 backdrop-blur-sm sm:px-10">
-        <Link href="/" className="group flex w-fit items-center gap-3">
-          <Logo className="h-9 w-9 transition-opacity group-hover:opacity-80" variant="purple" />
-          <span className="font-serif text-base tracking-widest text-ink">VĀK DEVI</span>
-        </Link>
+      <header className="sticky top-0 z-20 border-b border-ink/8 bg-white/70 px-6 py-4 backdrop-blur-sm sm:px-10">
+        <div className="flex items-center justify-between">
+          <Link href="/" className="group flex items-center gap-3">
+            <Logo className="h-9 w-9 transition-opacity group-hover:opacity-80" variant="purple" />
+            <span className="font-serif text-base tracking-widest text-ink">VĀK DEVI</span>
+          </Link>
+          <Link
+            href="/"
+            className="text-sm text-purple-2 transition-colors hover:text-purple-1"
+          >
+            × Cancelar
+          </Link>
+        </div>
       </header>
 
       {/* Main */}
