@@ -276,7 +276,13 @@ function StepService({
                     Destacado
                   </span>
                 )}
-                <span className="ml-auto text-xs text-ink/40">{s.duracion_minutos} min</span>
+                <span className="ml-auto flex items-center gap-1 text-sm font-semibold text-purple-1">
+                  <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden="true">
+                    <circle cx="6.5" cy="6.5" r="5.5" stroke="currentColor" strokeWidth="1.4"/>
+                    <path d="M6.5 3.5v3l2 1.3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  {s.duracion_minutos} min
+                </span>
               </div>
               {s.descripcion && (
                 <p className="text-xs leading-relaxed text-ink/55 line-clamp-2">{s.descripcion}</p>

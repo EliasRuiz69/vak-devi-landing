@@ -4,7 +4,15 @@ export default function Purpose() {
   return (
     <section id="proposito" className="bg-lavender px-6 py-28 sm:px-10 lg:py-36">
       <div className="mx-auto max-w-3xl">
-        <div className="mb-10 h-px w-16 bg-purple-3" />
+        <div className="mb-16 lg:mb-20">
+          <div data-line className="mb-8 h-px w-16 bg-purple-3" />
+          <RevealText
+            as="h2"
+            className="font-serif text-3xl leading-snug text-ink sm:text-4xl lg:text-5xl"
+          >
+            Propósito
+          </RevealText>
+        </div>
 
         <RevealText
           as="p"

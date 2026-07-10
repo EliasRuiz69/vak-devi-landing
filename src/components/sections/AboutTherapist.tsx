@@ -89,7 +89,7 @@ export default function AboutTherapist() {
             as="h2"
             className="font-serif text-3xl leading-snug text-ink sm:text-4xl lg:text-5xl"
           >
-            Quién te acompaña
+            ¿Quién te acompaña?
           </RevealText>
         </div>
 
@@ -144,7 +144,7 @@ export default function AboutTherapist() {
               as="p"
               className="text-base leading-relaxed text-ink/70 sm:text-lg"
             >
-              A lo largo de mi experiencia he acompañado a personas en momentos de crisis, transición y búsqueda: seres que sienten que algo adentro pide ser atendido, y que están listos para mirarlo con honestidad.
+              A lo largo de mi experiencia he acompañado a personas en momentos de crisis, transición y búsqueda: seres que sienten que algo adentro pide ser atendido, y que están listos para mirarlo con profundidad.
             </RevealText>
           </div>
         </div>
@@ -164,7 +164,7 @@ export default function AboutTherapist() {
               as="p"
               className="text-base leading-relaxed text-ink/70 sm:text-lg"
             >
-              Creo en procesos profundos, no en soluciones rápidas. En la escucha antes que en el consejo. En que cada persona lleva dentro los recursos que necesita — y que a veces solo hace falta un espacio seguro para encontrarlos.
+              Creo en procesos profundos, no en soluciones rápidas. En la escucha antes que en el consejo. En que cada persona lleva adentro los recursos que necesita — y que a veces solo le hace falta tener un espacio seguro para encontrarlos.
             </RevealText>
 
             <RevealText
@@ -228,7 +228,7 @@ export default function AboutTherapist() {
               delay={0.1}
               className="mt-7 font-serif text-base italic leading-relaxed text-purple-2 sm:text-lg"
             >
-              Si algo en estas palabras resuena contigo, me alegra que hayas llegado hasta aquí.
+              Si algo de estas palabras resuena contigo, me alegra que hayas llegado hasta aquí.
             </RevealText>
 
             <RevealText
@@ -236,7 +236,7 @@ export default function AboutTherapist() {
               delay={0.18}
               className="mt-4 font-serif text-base italic leading-relaxed text-purple-2 sm:text-lg"
             >
-              Este puede ser el comienzo de algo importante.
+              Este puede ser el comienzo de una nueva vida.
             </RevealText>
           </div>
         </div>
