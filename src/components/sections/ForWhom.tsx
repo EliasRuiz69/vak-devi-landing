@@ -3,7 +3,6 @@ import RevealText from "@/components/ui/RevealText";
 const LINES = [
   "Para quien siente que algo de adentro necesita atención.",
   "Para quien está cansado de sobrevivir y quiere empezar a vivir.",
-  "Para quien lleva mucho tiempo siendo lo que los demás esperan.",
   "Para quien sabe que hay más y quiere encontrarlo...",
 ];
 

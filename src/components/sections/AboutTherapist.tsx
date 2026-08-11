@@ -137,7 +137,7 @@ export default function AboutTherapist() {
               as="p"
               className="text-base leading-relaxed text-ink/70 sm:text-lg"
             >
-              Soy psicoterapeuta Ericksoniana y educadora en temas de crecimiento personal y de apreciación por la naturaleza y la cultura que nos rodea — dimensiones que entiendo como aspectos integrales del ser humano. Esa diversidad no es casualidad: es la base de un enfoque verdaderamente holístico.
+              Soy Psicoterapeuta Ericksoniana y educadora en temas de crecimiento personal y de apreciación por la naturaleza y la cultura que nos rodea — dimensiones que entiendo como aspectos integrales del ser humano. Esa diversidad no es casualidad: es la base de un enfoque verdaderamente holístico.
             </RevealText>
 
             <RevealText
@@ -171,7 +171,7 @@ export default function AboutTherapist() {
               as="p"
               className="text-base leading-relaxed text-ink/70 sm:text-lg"
             >
-              Trabajo desde la presencia, la honestidad y el respeto profundo por el ritmo de cada proceso.
+              Trabajo desde la presencia, la honestidad y el respeto profundo por el ritmo de cada persona.
             </RevealText>
           </div>
         </div>
@@ -212,7 +212,7 @@ export default function AboutTherapist() {
               as="p"
               className="font-serif text-base italic leading-relaxed text-ink/65 sm:text-lg"
             >
-              Mi camino ha sido diverso y profundo: la Danza, la Educación Ambiental, la Inteligencia Emocional y la Inteligencia Espiritual, formaciones que nutren mi mirada sobre el ser humano en su relación con el cuerpo, la naturaleza y el entorno.
+              Mi camino ha sido diverso y profundo: la Psicoterapia, la Danza, la Educación Ambiental, la Inteligencia Emocional y la Inteligencia Espiritual, formaciones que nutren mi mirada sobre el ser humano en su relación con el cuerpo, la naturaleza y la cultura.
             </RevealText>
 
             <RevealText

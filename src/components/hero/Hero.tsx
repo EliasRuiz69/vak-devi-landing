@@ -70,9 +70,12 @@ export default function Hero() {
 
           <div ref={subtitleRef} className="mt-6 max-w-xl opacity-0">
             <p className="font-serif text-lg italic leading-relaxed text-white/90 sm:text-xl">
-              Vak Devi es un espacio de acompañamiento terapéutico y desarrollo humano
-              donde aprendes a habitar quien realmente eres. No se trata de arreglarte.
-              Se trata de encontrarte.
+              Vak Devi es un espacio de{" "}
+              <span className="not-italic font-semibold text-white">
+                acompañamiento psicoterapéutico
+              </span>{" "}
+              y crecimiento personal donde aprendes a habitarte desde quien realmente eres.
+              Encuentra tu ser, habita tu vida.
             </p>
             <Button href="/agendar" className="pointer-events-auto mt-8">
               Agenda tu sesión exploratoria gratuita
