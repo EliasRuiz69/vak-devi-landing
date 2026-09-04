@@ -240,19 +240,45 @@ export async function deleteClient(email: string): Promise<void> {
   revalidatePath("/admin", "layout");
 }
 
-// ── Notas de clientes (CRM) ─────────────────────────────────────
+// ── CRUD Clientes (CRM) ──────────────────────────────────────────
 
-export async function upsertClientNotes(
-  email: string,
-  nombre: string,
-  notas: string,
-): Promise<void> {
+export type ClientFormState = { error: string | null; success: boolean };
+
+export type ClientData = { nombre: string; email: string; telefono: string; notas: string };
+
+export async function createClient(data: ClientData): Promise<ClientFormState> {
   await assertAdmin();
-  await createAdminClient()
-    .from("clients")
-    .upsert(
-      { email, nombre, notas: notas.trim() || null, actualizado_en: new Date().toISOString() },
-      { onConflict: "email" },
-    );
+  const { error } = await createAdminClient().from("clients").insert({
+    email: data.email,
+    nombre: data.nombre,
+    telefono: data.telefono || null,
+    notas: data.notas.trim() || null,
+  });
+  if (error) {
+    return {
+      error: error.code === "23505" ? "Ya existe un cliente con ese email." : error.message,
+      success: false,
+    };
+  }
   revalidatePath("/admin", "layout");
+  return { error: null, success: true };
+}
+
+export async function updateClient(
+  email: string,
+  data: Omit<ClientData, "email">,
+): Promise<ClientFormState> {
+  await assertAdmin();
+  const { error } = await createAdminClient()
+    .from("clients")
+    .update({
+      nombre: data.nombre,
+      telefono: data.telefono || null,
+      notas: data.notas.trim() || null,
+      actualizado_en: new Date().toISOString(),
+    })
+    .eq("email", email);
+  if (error) return { error: error.message, success: false };
+  revalidatePath("/admin", "layout");
+  return { error: null, success: true };
 }

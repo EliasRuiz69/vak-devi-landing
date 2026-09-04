@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { upsertClientNotes, deleteClient } from "@/app/actions/admin";
+import { createClient, updateClient, deleteClient, type ClientData } from "@/app/actions/admin";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import type { ClientRow } from "./page";
 
@@ -11,6 +11,7 @@ export default function ClientesClient({ clients }: { clients: ClientRow[] }) {
   const [isPending, startTransition] = useTransition();
   const [search, setSearch] = useState("");
   const [openEmail, setOpenEmail] = useState<string | null>(null);
+  const [creating, setCreating] = useState(false);
   const [confirmDeleteEmail, setConfirmDeleteEmail] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
 
@@ -39,8 +40,8 @@ export default function ClientesClient({ clients }: { clients: ClientRow[] }) {
 
   return (
     <>
-      {/* Search */}
-      <div className="mb-4">
+      {/* Search + alta */}
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <input
           type="search"
           placeholder="Buscar por nombre o email…"
@@ -48,12 +49,38 @@ export default function ClientesClient({ clients }: { clients: ClientRow[] }) {
           onChange={(e) => setSearch(e.target.value)}
           className="w-full max-w-sm rounded-xl border border-ink/15 bg-white px-4 py-2 text-sm text-ink placeholder-ink/35 focus:outline-none focus:border-purple-3"
         />
+        {!creating && (
+          <button
+            onClick={() => setCreating(true)}
+            className="shrink-0 flex items-center gap-2 rounded-full bg-purple-1 px-4 py-2.5 text-sm font-medium text-white hover:bg-purple-2 transition-colors"
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+            Alta cliente
+          </button>
+        )}
       </div>
 
       {/* Legal notice */}
       <p className="mb-4 text-[10px] text-ink/30 leading-relaxed max-w-2xl">
         Las notas privadas almacenadas aquí son de uso exclusivo del terapeuta y están protegidas conforme a la Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP). No se comparten con terceros ni se exponen al cliente.
       </p>
+
+      {creating && (
+        <div className="mb-4">
+          <ClientForm
+            onSave={async (data) => {
+              const res = await createClient(data);
+              if (!res.success) return res.error;
+              setCreating(false);
+              refresh();
+              return null;
+            }}
+            onCancel={() => setCreating(false)}
+          />
+        </div>
+      )}
 
       <div
         className={`flex flex-col gap-3 transition-opacity ${isPending ? "opacity-60" : ""}`}
@@ -69,9 +96,11 @@ export default function ClientesClient({ clients }: { clients: ClientRow[] }) {
               client={c}
               open={openEmail === c.email}
               onToggle={() => setOpenEmail(openEmail === c.email ? null : c.email)}
-              onSave={async (notas) => {
-                await upsertClientNotes(c.email, c.nombre, notas);
+              onSave={async (data) => {
+                const res = await updateClient(c.email, data);
+                if (!res.success) return res.error;
                 refresh();
+                return null;
               }}
               onDeleteClick={() => setConfirmDeleteEmail(c.email)}
             />
@@ -95,6 +124,8 @@ export default function ClientesClient({ clients }: { clients: ClientRow[] }) {
   );
 }
 
+// ─── Tarjeta de cliente ─────────────────────────────────────────────────────
+
 function ClientCard({
   client,
   open,
@@ -105,11 +136,14 @@ function ClientCard({
   client: ClientRow;
   open: boolean;
   onToggle: () => void;
-  onSave: (notas: string) => void;
+  onSave: (data: Omit<ClientData, "email">) => Promise<string | null>;
   onDeleteClick: () => void;
 }) {
+  const [nombre, setNombre] = useState(client.nombre);
+  const [telefono, setTelefono] = useState(client.telefono);
   const [notes, setNotes] = useState(client.notas);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   let ultimaLabel = "Sin citas registradas";
   if (client.ultimaSesion) {
@@ -123,7 +157,9 @@ function ClientCard({
 
   async function handleSave() {
     setSaving(true);
-    await onSave(notes);
+    setError(null);
+    const err = await onSave({ nombre, telefono, notas: notes });
+    if (err) setError(err);
     setSaving(false);
   }
 
@@ -182,26 +218,178 @@ function ClientCard({
         </button>
       </div>
 
-      {/* Notes panel */}
+      {/* Edit panel */}
       {open && (
         <div className="border-t border-ink/6 px-5 py-4 flex flex-col gap-3 bg-lavender/50">
-          <p className="text-xs font-medium text-ink/40 uppercase tracking-wide">Notas privadas</p>
-          <textarea
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            rows={4}
-            placeholder="Observaciones del proceso, patrones, avances, próximos pasos…"
-            className="w-full rounded-xl border border-ink/12 bg-white px-4 py-3 text-sm text-ink placeholder-ink/30 resize-none focus:outline-none focus:border-purple-3"
-          />
+          {error && (
+            <div className="rounded-xl bg-red-50 border border-red-200 px-4 py-2.5 text-sm text-red-600">
+              {error}
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <FormField label="Nombre">
+              <input
+                type="text"
+                value={nombre}
+                onChange={(e) => setNombre(e.target.value)}
+                className={inp}
+              />
+            </FormField>
+
+            <FormField label="Teléfono">
+              <input
+                type="tel"
+                value={telefono}
+                onChange={(e) => setTelefono(e.target.value)}
+                className={inp}
+              />
+            </FormField>
+
+            <FormField label="Email" className="sm:col-span-2">
+              <p className="w-full rounded-xl border border-ink/8 bg-white/60 px-3 py-2 text-sm text-ink/50">
+                {client.email}
+              </p>
+            </FormField>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <span className="text-xs font-medium text-ink/50 uppercase tracking-wide">
+              Notas privadas
+            </span>
+            <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              rows={4}
+              placeholder="Observaciones del proceso, patrones, avances, próximos pasos…"
+              className={inp + " resize-none"}
+            />
+          </div>
+
           <button
             onClick={handleSave}
             disabled={saving}
             className="self-end rounded-full bg-purple-1 px-5 py-2 text-xs font-medium text-white hover:bg-purple-2 transition-colors disabled:opacity-60"
           >
-            {saving ? "Guardando…" : "Guardar notas"}
+            {saving ? "Guardando…" : "Guardar cambios"}
           </button>
         </div>
       )}
+    </div>
+  );
+}
+
+// ─── Formulario de alta ─────────────────────────────────────────────────────
+
+function ClientForm({
+  onSave,
+  onCancel,
+}: {
+  onSave: (data: ClientData) => Promise<string | null>;
+  onCancel: () => void;
+}) {
+  const [form, setForm] = useState<ClientData>({ nombre: "", email: "", telefono: "", notas: "" });
+  const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setSaving(true);
+    setError(null);
+    const err = await onSave(form);
+    if (err) setError(err);
+    setSaving(false);
+  }
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className="rounded-2xl border-2 border-purple-3/30 bg-white px-5 py-5 flex flex-col gap-4"
+    >
+      <h3 className="font-serif text-base text-ink">Alta de cliente</h3>
+
+      {error && (
+        <div className="rounded-xl bg-red-50 border border-red-200 px-4 py-2.5 text-sm text-red-600">
+          {error}
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <FormField label="Nombre">
+          <input
+            type="text"
+            value={form.nombre}
+            onChange={(e) => setForm({ ...form, nombre: e.target.value })}
+            required
+            className={inp}
+          />
+        </FormField>
+
+        <FormField label="Email">
+          <input
+            type="email"
+            value={form.email}
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            required
+            className={inp}
+          />
+        </FormField>
+
+        <FormField label="Teléfono" className="sm:col-span-2">
+          <input
+            type="tel"
+            value={form.telefono}
+            onChange={(e) => setForm({ ...form, telefono: e.target.value })}
+            className={inp}
+          />
+        </FormField>
+
+        <FormField label="Notas privadas" className="sm:col-span-2">
+          <textarea
+            value={form.notas}
+            onChange={(e) => setForm({ ...form, notas: e.target.value })}
+            rows={3}
+            className={inp + " resize-none"}
+          />
+        </FormField>
+      </div>
+
+      <div className="flex gap-2 pt-1">
+        <button
+          type="submit"
+          disabled={saving}
+          className="rounded-full bg-purple-1 px-5 py-2 text-xs font-medium text-white hover:bg-purple-2 transition-colors disabled:opacity-60"
+        >
+          {saving ? "Guardando…" : "Guardar"}
+        </button>
+        <button
+          type="button"
+          onClick={onCancel}
+          className="rounded-full border border-ink/15 px-5 py-2 text-xs text-ink/55 hover:border-purple-3 transition-colors"
+        >
+          Cancelar
+        </button>
+      </div>
+    </form>
+  );
+}
+
+const inp =
+  "w-full rounded-xl border border-ink/12 bg-white px-3 py-2 text-sm text-ink focus:outline-none focus:border-purple-3";
+
+function FormField({
+  label,
+  children,
+  className,
+}: {
+  label: string;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={`flex flex-col gap-1.5 ${className ?? ""}`}>
+      <span className="text-xs font-medium text-ink/50 uppercase tracking-wide">{label}</span>
+      {children}
     </div>
   );
 }
