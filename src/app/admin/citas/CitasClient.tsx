@@ -8,7 +8,9 @@ import {
   completeAppointment,
   cancelAppointment,
   markNoShow,
+  deleteAppointment,
 } from "@/app/actions/admin";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import type { ApptRow } from "./page";
 
 const STATUS_LABEL: Record<string, string> = {
@@ -49,12 +51,25 @@ export default function CitasClient({
   const [filter, setFilter] = useState<Filter>("all");
   const [search, setSearch] = useState("");
   const [svcFilter, setSvcFilter] = useState("");
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   function doAction(fn: (id: string) => Promise<void>, id: string) {
     startTransition(async () => {
       await fn(id);
       router.refresh();
     });
+  }
+
+  const apptToDelete = appointments.find((a) => a.id === confirmDeleteId) ?? null;
+
+  async function handleConfirmDelete() {
+    if (!confirmDeleteId) return;
+    setDeleting(true);
+    await deleteAppointment(confirmDeleteId);
+    setDeleting(false);
+    setConfirmDeleteId(null);
+    router.refresh();
   }
 
   const visible = appointments.filter((a) => {
@@ -207,12 +222,30 @@ export default function CitasClient({
                   >
                     Ver detalle
                   </Link>
+                  <ActionBtn
+                    label="Eliminar"
+                    onClick={() => setConfirmDeleteId(a.id)}
+                    className="border border-red-200 text-red-500 hover:bg-red-50"
+                  />
                 </div>
               </div>
             </div>
           ))}
         </div>
       )}
+
+      <ConfirmDialog
+        open={confirmDeleteId !== null}
+        title="Eliminar cita"
+        message={
+          apptToDelete
+            ? `¿Eliminar la cita de ${apptToDelete.nombre_cliente} (${apptToDelete.fechaLong}, ${apptToDelete.hora_inicio.slice(0, 5)} h)?\n\nEsta acción no se puede deshacer.`
+            : ""
+        }
+        isPending={deleting}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setConfirmDeleteId(null)}
+      />
     </>
   );
 }

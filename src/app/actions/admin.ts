@@ -99,6 +99,19 @@ export async function createManualAppointment(
     estado: "confirmed",
   });
   if (error) return { success: false, error: "Error al guardar. Inténtalo de nuevo." };
+
+  // Registrar/actualizar al cliente (no bloqueante)
+  const { error: clientError } = await admin.from("clients").upsert(
+    {
+      email: raw.email,
+      nombre: raw.nombre,
+      telefono: raw.telefono,
+      actualizado_en: new Date().toISOString(),
+    },
+    { onConflict: "email" },
+  );
+  if (clientError) console.error("[clients] upsert error:", clientError);
+
   revalidatePath("/admin", "layout");
   return { success: true, error: null };
 }
@@ -211,6 +224,22 @@ export async function removeBlockedDate(id: string): Promise<void> {
   revalidatePath("/agendar");
 }
 
+// ── Eliminar citas y clientes ────────────────────────────────────
+
+export async function deleteAppointment(id: string): Promise<void> {
+  await assertAdmin();
+  await createAdminClient().from("appointments").delete().eq("id", id);
+  revalidatePath("/admin", "layout");
+}
+
+// Elimina solo el registro de contacto del cliente (tabla "clients").
+// Su historial de citas en "appointments" NO se toca — permanece intacto.
+export async function deleteClient(email: string): Promise<void> {
+  await assertAdmin();
+  await createAdminClient().from("clients").delete().eq("email", email);
+  revalidatePath("/admin", "layout");
+}
+
 // ── Notas de clientes (CRM) ─────────────────────────────────────
 
 export async function upsertClientNotes(
@@ -220,10 +249,10 @@ export async function upsertClientNotes(
 ): Promise<void> {
   await assertAdmin();
   await createAdminClient()
-    .from("client_notes")
+    .from("clients")
     .upsert(
-      { email_cliente: email, nombre_cliente: nombre, notas: notas.trim() || null, actualizado_en: new Date().toISOString() },
-      { onConflict: "email_cliente" },
+      { email, nombre, notas: notas.trim() || null, actualizado_en: new Date().toISOString() },
+      { onConflict: "email" },
     );
   revalidatePath("/admin", "layout");
 }

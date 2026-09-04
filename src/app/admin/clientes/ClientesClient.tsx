@@ -2,7 +2,8 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { upsertClientNotes } from "@/app/actions/admin";
+import { upsertClientNotes, deleteClient } from "@/app/actions/admin";
+import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import type { ClientRow } from "./page";
 
 export default function ClientesClient({ clients }: { clients: ClientRow[] }) {
@@ -10,6 +11,8 @@ export default function ClientesClient({ clients }: { clients: ClientRow[] }) {
   const [isPending, startTransition] = useTransition();
   const [search, setSearch] = useState("");
   const [openEmail, setOpenEmail] = useState<string | null>(null);
+  const [confirmDeleteEmail, setConfirmDeleteEmail] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const visible = search
     ? clients.filter(
@@ -21,6 +24,17 @@ export default function ClientesClient({ clients }: { clients: ClientRow[] }) {
 
   function refresh() {
     startTransition(() => { router.refresh(); });
+  }
+
+  const clientToDelete = clients.find((c) => c.email === confirmDeleteEmail) ?? null;
+
+  async function handleConfirmDelete() {
+    if (!confirmDeleteEmail) return;
+    setDeleting(true);
+    await deleteClient(confirmDeleteEmail);
+    setDeleting(false);
+    setConfirmDeleteEmail(null);
+    router.refresh();
   }
 
   return (
@@ -59,10 +73,24 @@ export default function ClientesClient({ clients }: { clients: ClientRow[] }) {
                 await upsertClientNotes(c.email, c.nombre, notas);
                 refresh();
               }}
+              onDeleteClick={() => setConfirmDeleteEmail(c.email)}
             />
           ))
         )}
       </div>
+
+      <ConfirmDialog
+        open={confirmDeleteEmail !== null}
+        title="Eliminar cliente"
+        message={
+          clientToDelete
+            ? `¿Eliminar el registro de contacto de ${clientToDelete.nombre} (${clientToDelete.email})?\n\nSe borrará su ficha y sus notas privadas. Sus ${clientToDelete.totalSesiones} citas seguirán guardadas en Citas. Esta acción no se puede deshacer.`
+            : ""
+        }
+        isPending={deleting}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setConfirmDeleteEmail(null)}
+      />
     </>
   );
 }
@@ -72,21 +100,26 @@ function ClientCard({
   open,
   onToggle,
   onSave,
+  onDeleteClick,
 }: {
   client: ClientRow;
   open: boolean;
   onToggle: () => void;
   onSave: (notas: string) => void;
+  onDeleteClick: () => void;
 }) {
   const [notes, setNotes] = useState(client.notas);
   const [saving, setSaving] = useState(false);
 
-  const [uy, um, ud] = client.ultimaSesion.split("-").map(Number);
-  const ultimaLabel = new Date(uy, um - 1, ud).toLocaleDateString("es-MX", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
+  let ultimaLabel = "Sin citas registradas";
+  if (client.ultimaSesion) {
+    const [uy, um, ud] = client.ultimaSesion.split("-").map(Number);
+    ultimaLabel = `última: ${new Date(uy, um - 1, ud).toLocaleDateString("es-MX", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    })}`;
+  }
 
   async function handleSave() {
     setSaving(true);
@@ -97,41 +130,57 @@ function ClientCard({
   return (
     <div className="rounded-2xl border border-ink/10 bg-white overflow-hidden">
       {/* Summary row */}
-      <button
-        onClick={onToggle}
-        className="w-full px-5 py-4 flex items-center justify-between gap-4 hover:bg-lavender transition-colors text-left"
-      >
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2 mb-0.5">
-            <span className="font-serif text-base text-ink capitalize">{client.nombre}</span>
-            {client.serviciosPrincipales.map((s) => (
-              <span key={s} className="rounded-full bg-purple-1/8 px-2 py-0.5 text-[10px] text-purple-2">
-                {s.split(" ").slice(0, 2).join(" ")}
-              </span>
-            ))}
-          </div>
-          <div className="flex flex-wrap gap-4 text-xs text-ink/40">
-            <span>{client.email}</span>
-            <span>{client.totalSesiones} sesiones</span>
-            {client.facturacionTotal > 0 && (
-              <span>${client.facturacionTotal.toLocaleString("es-MX")} MXN</span>
-            )}
-            <span>última: {ultimaLabel}</span>
-          </div>
-        </div>
-        <svg
-          width="14"
-          height="14"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          className={`shrink-0 text-ink/30 transition-transform ${open ? "rotate-180" : ""}`}
+      <div className="w-full flex items-center gap-1 hover:bg-lavender transition-colors">
+        <button
+          onClick={onToggle}
+          className="min-w-0 flex-1 px-5 py-4 flex items-center justify-between gap-4 text-left"
         >
-          <path d="M6 9l6 6 6-6" />
-        </svg>
-      </button>
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2 mb-0.5">
+              <span className="font-serif text-base text-ink capitalize">{client.nombre}</span>
+              {client.serviciosPrincipales.map((s) => (
+                <span key={s} className="rounded-full bg-purple-1/8 px-2 py-0.5 text-[10px] text-purple-2">
+                  {s.split(" ").slice(0, 2).join(" ")}
+                </span>
+              ))}
+            </div>
+            <div className="flex flex-wrap gap-4 text-xs text-ink/40">
+              <span>{client.email}</span>
+              <span>{client.totalSesiones} sesiones</span>
+              {client.facturacionTotal > 0 && (
+                <span>${client.facturacionTotal.toLocaleString("es-MX")} MXN</span>
+              )}
+              <span>{ultimaLabel}</span>
+            </div>
+          </div>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            className={`shrink-0 text-ink/30 transition-transform ${open ? "rotate-180" : ""}`}
+          >
+            <path d="M6 9l6 6 6-6" />
+          </svg>
+        </button>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onDeleteClick();
+          }}
+          title="Eliminar cliente"
+          aria-label="Eliminar cliente"
+          className="shrink-0 mr-4 rounded-full p-2 text-ink/25 hover:bg-red-50 hover:text-red-500 transition-colors"
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6h16Z" />
+          </svg>
+        </button>
+      </div>
 
       {/* Notes panel */}
       {open && (

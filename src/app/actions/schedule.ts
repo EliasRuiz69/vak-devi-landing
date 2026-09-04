@@ -142,6 +142,19 @@ export async function createAppointment(
     };
   }
 
+  // Registrar/actualizar al cliente (no bloqueante — un fallo aquí
+  // nunca debe impedir confirmar una cita ya guardada correctamente)
+  const { error: clientError } = await admin.from("clients").upsert(
+    {
+      email: raw.email,
+      nombre: raw.nombre,
+      telefono: raw.telefono,
+      actualizado_en: new Date().toISOString(),
+    },
+    { onConflict: "email" },
+  );
+  if (clientError) console.error("[clients] upsert error:", clientError);
+
   // Send emails (non-blocking — don't fail the booking if email fails)
   const from = process.env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev";
   const therapistEmail = process.env.THERAPIST_EMAIL!;

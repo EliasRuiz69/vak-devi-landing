@@ -12,7 +12,7 @@ export type ClientRow = {
   nombre: string;
   totalSesiones: number;
   facturacionTotal: number;
-  ultimaSesion: string;
+  ultimaSesion: string | null;
   serviciosPrincipales: string[];
   notas: string;
 };
@@ -20,38 +20,31 @@ export type ClientRow = {
 export default async function ClientesPage() {
   const admin = createAdminClient();
 
-  const [{ data: appts }, { data: clientNotes }] = await Promise.all([
+  const [{ data: clients }, { data: appts }] = await Promise.all([
+    admin.from("clients").select("email, nombre, notas"),
     admin
       .from("appointments")
-      .select("email_cliente, nombre_cliente, fecha, services(nombre, precio_mxn)")
+      .select("email_cliente, fecha, services(nombre, precio_mxn)")
       .in("estado", ["completed", "confirmed", "pending"])
       .order("fecha", { ascending: false }),
-    admin.from("client_notes").select("email_cliente, notas"),
   ]);
 
-  // Aggregate by email
+  // Aggregate stats by email (sesiones, facturación, última sesión, servicios)
   type SvcField = { nombre: string; precio_mxn: number | null };
-  const map = new Map<
+  const statsMap = new Map<
     string,
-    {
-      nombre: string;
-      sesiones: number;
-      facturacion: number;
-      ultima: string;
-      servicios: Map<string, number>;
-    }
+    { sesiones: number; facturacion: number; ultima: string; servicios: Map<string, number> }
   >();
 
   for (const a of appts ?? []) {
     const email = a.email_cliente as string;
-    const nombre = a.nombre_cliente as string;
     const fecha = a.fecha as string;
     const svc = a.services as unknown as SvcField | null;
 
-    if (!map.has(email)) {
-      map.set(email, { nombre, sesiones: 0, facturacion: 0, ultima: fecha, servicios: new Map() });
+    if (!statsMap.has(email)) {
+      statsMap.set(email, { sesiones: 0, facturacion: 0, ultima: fecha, servicios: new Map() });
     }
-    const entry = map.get(email)!;
+    const entry = statsMap.get(email)!;
     entry.sesiones += 1;
     entry.facturacion += svc?.precio_mxn ?? 0;
     if (fecha > entry.ultima) entry.ultima = fecha;
@@ -60,25 +53,26 @@ export default async function ClientesPage() {
     }
   }
 
-  const notesMap = new Map<string, string>();
-  for (const n of clientNotes ?? []) {
-    notesMap.set(n.email_cliente as string, n.notas as string);
-  }
-
-  const rows: ClientRow[] = [...map.entries()]
-    .map(([email, d]) => ({
-      email,
-      nombre: d.nombre,
-      totalSesiones: d.sesiones,
-      facturacionTotal: d.facturacion,
-      ultimaSesion: d.ultima,
-      serviciosPrincipales: [...d.servicios.entries()]
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 2)
-        .map(([n]) => n),
-      notas: notesMap.get(email) ?? "",
-    }))
-    .sort((a, b) => b.ultimaSesion.localeCompare(a.ultimaSesion));
+  // "clients" es la fuente de verdad de quién es cliente; las stats se
+  // cruzan encima. Un cliente sin citas (p. ej. se borraron todas) es
+  // válido y se lista igual, sin fecha ni servicios.
+  const rows: ClientRow[] = (clients ?? [])
+    .map((c) => {
+      const email = c.email as string;
+      const stats = statsMap.get(email);
+      return {
+        email,
+        nombre: c.nombre as string,
+        totalSesiones: stats?.sesiones ?? 0,
+        facturacionTotal: stats?.facturacion ?? 0,
+        ultimaSesion: stats?.ultima ?? null,
+        serviciosPrincipales: stats
+          ? [...stats.servicios.entries()].sort((a, b) => b[1] - a[1]).slice(0, 2).map(([n]) => n)
+          : [],
+        notas: (c.notas as string | null) ?? "",
+      };
+    })
+    .sort((a, b) => (b.ultimaSesion ?? "").localeCompare(a.ultimaSesion ?? ""));
 
   return (
     <div className="p-5 lg:p-8 max-w-6xl mx-auto">
