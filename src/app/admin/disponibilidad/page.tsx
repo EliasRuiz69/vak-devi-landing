@@ -18,6 +18,9 @@ export type ScheduleConfig = {
 export type BlockedDate = {
   id: string;
   fecha: string;
+  fecha_fin: string;
+  hora_inicio: string | null;
+  hora_fin: string | null;
   motivo: string | null;
 };
 
@@ -26,7 +29,10 @@ export default async function DisponibilidadPage() {
 
   const [{ data: cfg }, { data: blocked }] = await Promise.all([
     admin.from("schedule_config").select("*").eq("activo", true).single(),
-    admin.from("blocked_dates").select("id, fecha, motivo").order("fecha"),
+    admin
+      .from("blocked_dates")
+      .select("id, fecha, fecha_fin, hora_inicio, hora_fin, motivo")
+      .order("fecha"),
   ]);
 
   const config: ScheduleConfig | null = cfg
@@ -42,6 +48,9 @@ export default async function DisponibilidadPage() {
   const blockedDates: BlockedDate[] = (blocked ?? []).map((b) => ({
     id: b.id as string,
     fecha: b.fecha as string,
+    fecha_fin: b.fecha_fin as string,
+    hora_inicio: (b.hora_inicio as string | null)?.slice(0, 5) ?? null,
+    hora_fin: (b.hora_fin as string | null)?.slice(0, 5) ?? null,
     motivo: b.motivo as string | null,
   }));
 

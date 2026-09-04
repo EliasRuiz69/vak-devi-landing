@@ -200,18 +200,54 @@ export async function updateScheduleConfig(id: string, data: ScheduleData): Prom
 
 // ── Días bloqueados ─────────────────────────────────────────────
 
-export async function addBlockedDate(fecha: string, motivo: string): Promise<ServiceFormState> {
+const FECHA_RE = /^\d{4}-\d{2}-\d{2}$/;
+const HORA_RE = /^\d{2}:\d{2}$/;
+
+export async function addBlockedDateRange(
+  fechaInicio: string,
+  fechaFin: string,
+  motivo: string,
+): Promise<ServiceFormState> {
   await assertAdmin();
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(fecha)) return { error: "Fecha inválida.", success: false };
-  const { error } = await createAdminClient()
-    .from("blocked_dates")
-    .insert({ fecha, motivo: motivo.trim() || null });
-  if (error) {
-    return {
-      error: error.code === "23505" ? "Esa fecha ya está bloqueada." : error.message,
-      success: false,
-    };
+  if (!FECHA_RE.test(fechaInicio) || !FECHA_RE.test(fechaFin)) {
+    return { error: "Fecha inválida.", success: false };
   }
+  if (fechaInicio > fechaFin) {
+    return { error: "La fecha de inicio debe ser anterior o igual a la de fin.", success: false };
+  }
+  const { error } = await createAdminClient().from("blocked_dates").insert({
+    fecha: fechaInicio,
+    fecha_fin: fechaFin,
+    motivo: motivo.trim() || null,
+  });
+  if (error) return { error: error.message, success: false };
+  revalidatePath("/admin", "layout");
+  revalidatePath("/agendar");
+  return { error: null, success: true };
+}
+
+export async function addBlockedTimeRange(
+  fecha: string,
+  horaInicio: string,
+  horaFin: string,
+  motivo: string,
+): Promise<ServiceFormState> {
+  await assertAdmin();
+  if (!FECHA_RE.test(fecha)) return { error: "Fecha inválida.", success: false };
+  if (!HORA_RE.test(horaInicio) || !HORA_RE.test(horaFin)) {
+    return { error: "Horario inválido.", success: false };
+  }
+  if (horaInicio >= horaFin) {
+    return { error: "La hora de inicio debe ser anterior a la de fin.", success: false };
+  }
+  const { error } = await createAdminClient().from("blocked_dates").insert({
+    fecha,
+    fecha_fin: fecha,
+    hora_inicio: horaInicio,
+    hora_fin: horaFin,
+    motivo: motivo.trim() || null,
+  });
+  if (error) return { error: error.message, success: false };
   revalidatePath("/admin", "layout");
   revalidatePath("/agendar");
   return { error: null, success: true };

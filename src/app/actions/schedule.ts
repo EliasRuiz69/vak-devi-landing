@@ -94,20 +94,46 @@ export async function createAppointment(
     };
   }
 
-  const { data: appts } = await admin
-    .from("appointments")
-    .select("hora_inicio, hora_fin")
-    .eq("fecha", raw.fecha)
-    .neq("estado", "cancelled");
+  // Bloqueo de día(s) completo(s) que cubra esta fecha
+  const { count: blockedDayCount } = await admin
+    .from("blocked_dates")
+    .select("id", { count: "exact", head: true })
+    .is("hora_inicio", null)
+    .lte("fecha", raw.fecha)
+    .gte("fecha_fin", raw.fecha);
+  if ((blockedDayCount ?? 0) > 0) {
+    return {
+      success: false,
+      error: "Esa fecha ya no está disponible. Por favor selecciona otra.",
+    };
+  }
+
+  const [{ data: appts }, { data: blockedTimes }] = await Promise.all([
+    admin
+      .from("appointments")
+      .select("hora_inicio, hora_fin")
+      .eq("fecha", raw.fecha)
+      .neq("estado", "cancelled"),
+    admin
+      .from("blocked_dates")
+      .select("hora_inicio, hora_fin")
+      .eq("fecha", raw.fecha)
+      .not("hora_inicio", "is", null),
+  ]);
 
   const slotMins = parseTimeMins(raw.hora);
-  const blocked = (appts ?? []).some((a) =>
-    slotsOverlap(
-      slotMins,
-      service.duracion_minutos as number,
-      parseTimeMins((a.hora_inicio as string).slice(0, 5)),
-      parseTimeMins((a.hora_fin as string).slice(0, 5)),
-    ),
+  const occupiedRanges = [
+    ...(appts ?? []).map((a) => ({
+      start: parseTimeMins((a.hora_inicio as string).slice(0, 5)),
+      end: parseTimeMins((a.hora_fin as string).slice(0, 5)),
+    })),
+    ...(blockedTimes ?? []).map((b) => ({
+      start: parseTimeMins((b.hora_inicio as string).slice(0, 5)),
+      end: parseTimeMins((b.hora_fin as string).slice(0, 5)),
+    })),
+  ];
+  const blocked = occupiedRanges.some((r) =>
+    slotsOverlap(slotMins, service.duracion_minutos as number, r.start, r.end),
   );
 
   if (blocked) {
