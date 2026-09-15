@@ -24,6 +24,8 @@ import {
   createService,
   toggleServiceActive,
   reorderServices,
+  uploadServiceImage,
+  deleteServiceImage,
   type ServiceData,
 } from "@/app/actions/admin";
 import type { ServiceRow } from "./page";
@@ -53,8 +55,14 @@ export default function ServiciosClient({ services }: { services: ServiceRow[] }
 
   async function handleSave(id: string, data: ServiceData) {
     setError(null);
+    const oldImagenUrl = orderedServices.find((s) => s.id === id)?.imagen_url ?? null;
     const res = await updateService(id, data);
     if (res.error) { setError(res.error); return; }
+    if (oldImagenUrl && oldImagenUrl !== data.imagen_url) {
+      deleteServiceImage(oldImagenUrl).catch((err) =>
+        console.error("[storage] deleteServiceImage error:", err),
+      );
+    }
     setEditingId(null);
     refresh();
   }
@@ -309,9 +317,12 @@ function GripIcon() {
   );
 }
 
-// ─── Service form (unchanged) ─────────────────────────────────────────────────
+// ─── Service form ─────────────────────────────────────────────────────────────
 
-type FormData = Omit<ServiceData, "activo">;
+type ServiceFormValues = Omit<ServiceData, "activo">;
+
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
 
 function ServiceForm({
   initial,
@@ -319,21 +330,49 @@ function ServiceForm({
   onCancel,
 }: {
   initial?: ServiceRow;
-  onSave: (data: FormData) => void;
+  onSave: (data: ServiceFormValues) => void;
   onCancel: () => void;
 }) {
-  const [form, setForm] = useState<FormData>({
+  const [form, setForm] = useState<ServiceFormValues>({
     nombre: initial?.nombre ?? "",
     descripcion: initial?.descripcion ?? "",
     duracion_minutos: initial?.duracion_minutos ?? 60,
     precio_mxn: initial?.precio_mxn ?? null,
     es_premium: initial?.es_premium ?? false,
     orden: initial?.orden ?? 99,
+    imagen_url: initial?.imagen_url ?? null,
   });
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     onSave(form);
+  }
+
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // permite volver a seleccionar el mismo archivo después
+    if (!file) return;
+
+    if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
+      setUploadError("Formato no permitido. Usa JPG, PNG o WEBP.");
+      return;
+    }
+    if (file.size > MAX_IMAGE_BYTES) {
+      setUploadError("La imagen no puede superar 5MB.");
+      return;
+    }
+
+    setUploadError(null);
+    setUploading(true);
+    const fd = new FormData();
+    fd.append("file", file);
+    const res = await uploadServiceImage(fd);
+    setUploading(false);
+
+    if ("error" in res) { setUploadError(res.error); return; }
+    setForm((f) => ({ ...f, imagen_url: res.url }));
   }
 
   return (
@@ -413,12 +452,37 @@ function ServiceForm({
             <span className="text-sm text-ink/70">Marcar como Premium</span>
           </label>
         </FormField>
+
+        <FormField label="Imagen del servicio" className="sm:col-span-2">
+          <div className="flex items-center gap-4">
+            {form.imagen_url && (
+              // eslint-disable-next-line @next/next/no-img-element -- vista previa de admin, no necesita optimización de next/image
+              <img
+                src={form.imagen_url}
+                alt=""
+                className="h-16 w-16 shrink-0 rounded-lg border border-ink/10 object-cover"
+              />
+            )}
+            <div className="flex flex-col gap-1">
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={handleFileChange}
+                disabled={uploading}
+                className="text-sm text-ink/70 file:mr-3 file:rounded-full file:border-0 file:bg-purple-1/10 file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-purple-2 hover:file:bg-purple-1/20 disabled:opacity-60"
+              />
+              {uploading && <p className="text-xs text-ink/40">Subiendo…</p>}
+              {uploadError && <p className="text-xs text-red-500">{uploadError}</p>}
+            </div>
+          </div>
+        </FormField>
       </div>
 
       <div className="flex gap-2 pt-1">
         <button
           type="submit"
-          className="rounded-full bg-purple-1 px-5 py-2 text-xs font-medium text-white hover:bg-purple-2 transition-colors"
+          disabled={uploading}
+          className="rounded-full bg-purple-1 px-5 py-2 text-xs font-medium text-white hover:bg-purple-2 transition-colors disabled:cursor-not-allowed disabled:opacity-60"
         >
           Guardar
         </button>

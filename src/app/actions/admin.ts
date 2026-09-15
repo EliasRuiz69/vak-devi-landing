@@ -128,6 +128,7 @@ export type ServiceData = {
   es_premium: boolean;
   activo: boolean;
   orden: number;
+  imagen_url: string | null;
 };
 
 export async function updateService(id: string, data: ServiceData): Promise<ServiceFormState> {
@@ -150,6 +151,71 @@ export async function createService(
   revalidatePath("/");
   revalidatePath("/agendar");
   return { error: null, success: true };
+}
+
+const SERVICE_IMAGE_BUCKET = "servicios";
+const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+
+export async function uploadServiceImage(
+  formData: FormData,
+): Promise<{ url: string } | { error: string }> {
+  try {
+    await assertAdmin();
+
+    const file = formData.get("file");
+    if (!(file instanceof File)) {
+      return { error: "No se recibió ningún archivo." };
+    }
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      return { error: "Formato no permitido. Usa JPG, PNG o WEBP." };
+    }
+    if (file.size > MAX_IMAGE_BYTES) {
+      return { error: "La imagen no puede superar 5MB." };
+    }
+
+    const ext = file.name.includes(".")
+      ? file.name.split(".").pop()!.toLowerCase()
+      : file.type.split("/")[1];
+    const fileName = `${crypto.randomUUID()}.${ext}`;
+
+    const admin = createAdminClient();
+    const { error: uploadError } = await admin.storage
+      .from(SERVICE_IMAGE_BUCKET)
+      .upload(fileName, file, { contentType: file.type, upsert: false });
+    if (uploadError) {
+      console.error("[storage] uploadServiceImage error:", uploadError);
+      return { error: "Error al subir la imagen. Inténtalo de nuevo." };
+    }
+
+    const { data } = admin.storage.from(SERVICE_IMAGE_BUCKET).getPublicUrl(fileName);
+    return { url: data.publicUrl };
+  } catch (err) {
+    console.error("[storage] uploadServiceImage error:", err);
+    return { error: "Error inesperado al subir la imagen." };
+  }
+}
+
+// Borrado best-effort de una imagen anterior — nunca bloquea el flujo del
+// formulario. Cualquier fallo (parseo de URL o error de Storage) solo se
+// reporta en consola del servidor.
+export async function deleteServiceImage(url: string): Promise<void> {
+  try {
+    await assertAdmin();
+    const marker = `/storage/v1/object/public/${SERVICE_IMAGE_BUCKET}/`;
+    const idx = url.indexOf(marker);
+    if (idx === -1) {
+      console.error("[storage] deleteServiceImage: no se pudo extraer la ruta de", url);
+      return;
+    }
+    const path = url.slice(idx + marker.length);
+    if (!path) return;
+
+    const { error } = await createAdminClient().storage.from(SERVICE_IMAGE_BUCKET).remove([path]);
+    if (error) console.error("[storage] deleteServiceImage error:", error);
+  } catch (err) {
+    console.error("[storage] deleteServiceImage error:", err);
+  }
 }
 
 export async function toggleServiceActive(id: string, activo: boolean): Promise<void> {

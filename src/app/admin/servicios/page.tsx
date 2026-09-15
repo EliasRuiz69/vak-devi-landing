@@ -16,13 +16,14 @@ export type ServiceRow = {
   es_premium: boolean;
   activo: boolean;
   orden: number;
+  imagen_url: string | null;
 };
 
 export default async function ServiciosPage() {
   const admin = createAdminClient();
   const { data } = await admin
     .from("services")
-    .select("id, nombre, descripcion, duracion_minutos, precio_mxn, es_premium, activo, orden")
+    .select("id, nombre, descripcion, duracion_minutos, precio_mxn, es_premium, activo, orden, imagen_url")
     .order("orden");
 
   const rows: ServiceRow[] = (data ?? []).map((s) => ({
@@ -34,6 +35,7 @@ export default async function ServiciosPage() {
     es_premium: (s.es_premium ?? false) as boolean,
     activo: (s.activo ?? true) as boolean,
     orden: s.orden as number,
+    imagen_url: s.imagen_url as string | null,
   }));
 
   return (
