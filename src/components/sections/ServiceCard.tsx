@@ -1,7 +1,8 @@
+import Image from "next/image";
 import type { Service } from "@/content/services";
 
 export default function ServiceCard({ service }: { service: Service }) {
-  const { name, description, premium, tools } = service;
+  const { name, description, premium, tools, image } = service;
 
   return (
     <article
@@ -12,9 +13,21 @@ export default function ServiceCard({ service }: { service: Service }) {
       }`}
     >
       {premium && (
-        <span className="absolute -top-3 left-8 rounded-full bg-purple-1 px-3 py-1 text-xs font-medium tracking-wide text-white">
+        <span className="absolute -top-3 left-8 z-20 rounded-full bg-purple-1 px-3 py-1 text-xs font-medium tracking-wide text-white shadow-md">
           Destacado
         </span>
+      )}
+
+      {image && (
+        <div className="relative -mx-8 -mt-8 mb-6 aspect-[16/10] overflow-hidden rounded-t-2xl bg-lavender">
+          <Image
+            src={image}
+            alt=""
+            fill
+            className="object-contain"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          />
+        </div>
       )}
 
       <h3 className="font-serif text-xl text-purple-2 sm:text-2xl">{name}</h3>
