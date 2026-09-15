@@ -4,6 +4,7 @@ export type Service = {
   description: string;
   premium?: boolean;
   tools?: string[];
+  image?: string;
 };
 
 export const services: Service[] = [
