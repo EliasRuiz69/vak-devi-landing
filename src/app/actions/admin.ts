@@ -61,22 +61,28 @@ export async function createManualAppointment(
 ): Promise<ManualApptState> {
   await assertAdmin();
   const raw = {
-    serviceId: ((formData.get("serviceId") as string) ?? "").trim(),
+    serviceId: ((formData.get("servicioId") as string) ?? "").trim(),
     fecha: ((formData.get("fecha") as string) ?? "").trim(),
-    hora: ((formData.get("hora") as string) ?? "").trim(),
-    nombre: ((formData.get("nombre") as string) ?? "").trim(),
-    email: ((formData.get("email") as string) ?? "").trim(),
-    telefono: ((formData.get("telefono") as string) ?? "").trim(),
-    motivo: ((formData.get("motivo") as string) ?? "").trim(),
+    hora: ((formData.get("hora_inicio") as string) ?? "").trim(),
+    nombre: ((formData.get("nombre_cliente") as string) ?? "").trim(),
+    email: ((formData.get("email_cliente") as string) ?? "").trim(),
+    telefono: ((formData.get("telefono_cliente") as string) ?? "").trim(),
+    motivo: ((formData.get("motivo_consulta") as string) ?? "").trim(),
+    estado: ((formData.get("estado") as string) ?? "").trim(),
   };
   const fe: Record<string, string> = {};
-  if (!raw.serviceId) fe.serviceId = "Selecciona un servicio.";
+  if (!raw.serviceId) fe.servicioId = "Selecciona un servicio.";
   if (!raw.fecha || !/^\d{4}-\d{2}-\d{2}$/.test(raw.fecha)) fe.fecha = "Fecha inválida.";
-  if (!raw.hora || !/^\d{2}:\d{2}$/.test(raw.hora)) fe.hora = "Horario inválido (HH:MM).";
-  if (!raw.nombre) fe.nombre = "Nombre requerido.";
-  if (!raw.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(raw.email)) fe.email = "Email inválido.";
-  if (!raw.telefono) fe.telefono = "Teléfono requerido.";
+  if (!raw.hora || !/^\d{2}:\d{2}$/.test(raw.hora)) fe.hora_inicio = "Horario inválido (HH:MM).";
+  if (!raw.nombre) fe.nombre_cliente = "Nombre requerido.";
+  if (!raw.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(raw.email)) fe.email_cliente = "Email inválido.";
+  if (!raw.telefono) fe.telefono_cliente = "Teléfono requerido.";
   if (Object.keys(fe).length) return { success: false, error: null, fieldErrors: fe };
+
+  // Solo los dos estados que la UI de "Nueva cita" realmente ofrece —
+  // cualquier otro valor (o ausente) cae al comportamiento previo.
+  const ESTADOS_INICIALES_VALIDOS = ["pending", "confirmed"];
+  const estadoInicial = ESTADOS_INICIALES_VALIDOS.includes(raw.estado) ? raw.estado : "confirmed";
 
   const admin = createAdminClient();
   const { data: service } = await admin
@@ -96,7 +102,7 @@ export async function createManualAppointment(
     email_cliente: raw.email,
     telefono_cliente: raw.telefono,
     motivo_consulta: raw.motivo || null,
-    estado: "confirmed",
+    estado: estadoInicial,
   });
   if (error) return { success: false, error: "Error al guardar. Inténtalo de nuevo." };
 

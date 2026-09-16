@@ -16,8 +16,14 @@ export default function NuevaCitaForm({
 
   const [selectedSvc, setSelectedSvc] = useState(serviceOptions[0]?.id ?? "");
   const [fecha, setFecha] = useState("");
+  const [horaSeleccionada, setHoraSeleccionada] = useState("");
   const [slots, setSlots] = useState<string[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
+  const [nombreCliente, setNombreCliente] = useState("");
+  const [emailCliente, setEmailCliente] = useState("");
+  const [telefonoCliente, setTelefonoCliente] = useState("");
+  const [motivoConsulta, setMotivoConsulta] = useState("");
+  const [estado, setEstado] = useState("confirmed");
 
   useEffect(() => {
     if (state.success) {
@@ -27,6 +33,7 @@ export default function NuevaCitaForm({
   }, [state.success, router]);
 
   useEffect(() => {
+    setHoraSeleccionada("");
     if (!selectedSvc || !fecha) {
       setSlots([]);
       return;
@@ -90,6 +97,8 @@ export default function NuevaCitaForm({
                     type="radio"
                     name="hora_inicio"
                     value={s}
+                    checked={horaSeleccionada === s}
+                    onChange={() => setHoraSeleccionada(s)}
                     required
                     className="accent-purple-1"
                   />
@@ -110,6 +119,8 @@ export default function NuevaCitaForm({
         <input
           type="text"
           name="nombre_cliente"
+          value={nombreCliente}
+          onChange={(e) => setNombreCliente(e.target.value)}
           placeholder="Nombre completo"
           className={inputCls(!!state.fieldErrors?.nombre_cliente)}
         />
@@ -118,6 +129,8 @@ export default function NuevaCitaForm({
         <input
           type="email"
           name="email_cliente"
+          value={emailCliente}
+          onChange={(e) => setEmailCliente(e.target.value)}
           placeholder="correo@ejemplo.com"
           className={inputCls(!!state.fieldErrors?.email_cliente)}
         />
@@ -126,6 +139,8 @@ export default function NuevaCitaForm({
         <input
           type="tel"
           name="telefono_cliente"
+          value={telefonoCliente}
+          onChange={(e) => setTelefonoCliente(e.target.value)}
           placeholder="+52 999 000 0000"
           className={inputCls(!!state.fieldErrors?.telefono_cliente)}
         />
@@ -133,6 +148,8 @@ export default function NuevaCitaForm({
       <Field label="Motivo de consulta" error={state.fieldErrors?.motivo_consulta}>
         <textarea
           name="motivo_consulta"
+          value={motivoConsulta}
+          onChange={(e) => setMotivoConsulta(e.target.value)}
           rows={3}
           placeholder="Breve descripción del motivo (opcional)"
           className={inputCls(false) + " resize-none"}
@@ -141,7 +158,12 @@ export default function NuevaCitaForm({
 
       {/* Estado inicial */}
       <Field label="Estado inicial" error={undefined}>
-        <select name="estado" defaultValue="confirmed" className={inputCls(false)}>
+        <select
+          name="estado"
+          value={estado}
+          onChange={(e) => setEstado(e.target.value)}
+          className={inputCls(false)}
+        >
           <option value="pending">Pendiente</option>
           <option value="confirmed">Confirmada</option>
         </select>
