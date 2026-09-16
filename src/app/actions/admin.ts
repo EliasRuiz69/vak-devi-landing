@@ -85,6 +85,26 @@ export async function createManualAppointment(
   const estadoInicial = ESTADOS_INICIALES_VALIDOS.includes(raw.estado) ? raw.estado : "confirmed";
 
   const admin = createAdminClient();
+
+  // El alta manual solo admite clientes ya registrados en la pestaña
+  // Clientes — email es el único campo con unique constraint en "clients",
+  // así que es el que valida realmente la existencia.
+  const { data: existingClient } = await admin
+    .from("clients")
+    .select("email")
+    .eq("email", raw.email)
+    .maybeSingle();
+  if (!existingClient) {
+    return {
+      success: false,
+      error: null,
+      fieldErrors: {
+        email_cliente:
+          "No existe ningún cliente registrado con este email. Da de alta al cliente primero en la pestaña Clientes.",
+      },
+    };
+  }
+
   const { data: service } = await admin
     .from("services")
     .select("nombre, duracion_minutos")

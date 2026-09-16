@@ -2,14 +2,19 @@
 
 import { useActionState, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { Combobox, ComboboxInput, ComboboxOptions, ComboboxOption } from "@headlessui/react";
 import { createManualAppointment, type ManualApptState } from "@/app/actions/admin";
 
 const INITIAL: ManualApptState = { success: false, error: null };
 
+type ClientOption = { nombre: string; email: string; telefono: string };
+
 export default function NuevaCitaForm({
   serviceOptions,
+  clientOptions,
 }: {
   serviceOptions: { id: string; nombre: string; duracion_minutos: number }[];
+  clientOptions: ClientOption[];
 }) {
   const router = useRouter();
   const [state, action, isPending] = useActionState(createManualAppointment, INITIAL);
@@ -24,6 +29,18 @@ export default function NuevaCitaForm({
   const [telefonoCliente, setTelefonoCliente] = useState("");
   const [motivoConsulta, setMotivoConsulta] = useState("");
   const [estado, setEstado] = useState("confirmed");
+  const [selectedClient, setSelectedClient] = useState<ClientOption | null>(null);
+
+  const filteredClients = clientOptions.filter((c) =>
+    c.nombre.toLowerCase().includes(nombreCliente.trim().toLowerCase()),
+  );
+
+  function selectClient(c: ClientOption) {
+    setSelectedClient(c);
+    setNombreCliente(c.nombre);
+    setEmailCliente(c.email);
+    setTelefonoCliente(c.telefono);
+  }
 
   useEffect(() => {
     if (state.success) {
@@ -45,8 +62,6 @@ export default function NuevaCitaForm({
       .catch(() => setSlots([]))
       .finally(() => setLoadingSlots(false));
   }, [selectedSvc, fecha]);
-
-  const today = new Date().toLocaleDateString("en-CA");
 
   return (
     <form action={action} className="flex flex-col gap-5">
@@ -71,7 +86,6 @@ export default function NuevaCitaForm({
         <input
           type="date"
           name="fecha"
-          min={today}
           value={fecha}
           onChange={(e) => setFecha(e.target.value)}
           className={inputCls(!!state.fieldErrors?.fecha)}
@@ -116,14 +130,33 @@ export default function NuevaCitaForm({
 
       {/* Client data */}
       <Field label="Nombre del cliente" error={state.fieldErrors?.nombre_cliente}>
-        <input
-          type="text"
-          name="nombre_cliente"
-          value={nombreCliente}
-          onChange={(e) => setNombreCliente(e.target.value)}
-          placeholder="Nombre completo"
-          className={inputCls(!!state.fieldErrors?.nombre_cliente)}
-        />
+        <Combobox value={selectedClient} onChange={(c: ClientOption | null) => c && selectClient(c)} immediate>
+          <div className="relative">
+            <ComboboxInput
+              name="nombre_cliente"
+              autoComplete="off"
+              displayValue={(c: ClientOption | null) => c?.nombre ?? nombreCliente}
+              onChange={(e) => setNombreCliente(e.target.value)}
+              placeholder="Nombre completo"
+              className={inputCls(!!state.fieldErrors?.nombre_cliente)}
+            />
+            <ComboboxOptions className="absolute z-10 mt-1 max-h-56 w-full overflow-y-auto rounded-xl border border-ink/12 bg-white shadow-lg empty:invisible focus:outline-none">
+              {filteredClients.map((c) => {
+                const nombresDuplicados =
+                  clientOptions.filter((o) => o.nombre === c.nombre).length > 1;
+                return (
+                  <ComboboxOption
+                    key={c.email}
+                    value={c}
+                    className="cursor-pointer px-4 py-2 text-sm text-ink data-[focus]:bg-lavender data-[selected]:font-medium"
+                  >
+                    {nombresDuplicados ? `${c.nombre} — ${c.email}` : c.nombre}
+                  </ComboboxOption>
+                );
+              })}
+            </ComboboxOptions>
+          </div>
+        </Combobox>
       </Field>
       <Field label="Email" error={state.fieldErrors?.email_cliente}>
         <input

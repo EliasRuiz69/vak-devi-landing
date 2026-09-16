@@ -10,16 +10,25 @@ export const metadata: Metadata = {
 
 export default async function NuevaCitaPage() {
   const admin = createAdminClient();
-  const { data: services } = await admin
-    .from("services")
-    .select("id, nombre, duracion_minutos")
-    .eq("activo", true)
-    .order("orden");
+  const [{ data: services }, { data: clients }] = await Promise.all([
+    admin
+      .from("services")
+      .select("id, nombre, duracion_minutos")
+      .eq("activo", true)
+      .order("orden"),
+    admin.from("clients").select("nombre, email, telefono").order("nombre", { ascending: true }),
+  ]);
 
   const svcOptions = (services ?? []).map((s) => ({
     id: s.id as string,
     nombre: s.nombre as string,
     duracion_minutos: s.duracion_minutos as number,
+  }));
+
+  const clientOptions = (clients ?? []).map((c) => ({
+    nombre: c.nombre as string,
+    email: c.email as string,
+    telefono: (c.telefono as string | null) ?? "",
   }));
 
   return (
@@ -40,7 +49,7 @@ export default async function NuevaCitaPage() {
         <p className="text-sm text-ink/45 mt-1">Crea una cita manual para un cliente.</p>
       </div>
 
-      <NuevaCitaForm serviceOptions={svcOptions} />
+      <NuevaCitaForm serviceOptions={svcOptions} clientOptions={clientOptions} />
     </div>
   );
 }
