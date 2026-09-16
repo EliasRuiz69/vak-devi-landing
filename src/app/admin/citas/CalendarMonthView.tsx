@@ -23,10 +23,12 @@ export default function CalendarMonthView({
   appointments,
   scheduleConfig,
   blockedDates,
+  onSelectDay,
 }: {
   appointments: ApptRow[];
   scheduleConfig: ScheduleConfig | null;
   blockedDates: BlockedDate[];
+  onSelectDay: (fecha: string) => void;
 }) {
   const today = getTodayMerida();
   const [monthStart, setMonthStart] = useState(getMonthStart(today));
@@ -104,7 +106,16 @@ export default function CalendarMonthView({
               return (
                 <div
                   key={dateStr}
-                  className={`flex min-h-[6.5rem] flex-col gap-1 rounded-xl border p-1.5 ${
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => onSelectDay(dateStr)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      onSelectDay(dateStr);
+                    }
+                  }}
+                  className={`flex min-h-[6.5rem] cursor-pointer flex-col gap-1 rounded-xl border p-1.5 transition-shadow hover:ring-1 hover:ring-purple-3/40 ${
                     !inCurrentMonth
                       ? "border-ink/5 bg-ink/[0.02]"
                       : bloqueoTotal

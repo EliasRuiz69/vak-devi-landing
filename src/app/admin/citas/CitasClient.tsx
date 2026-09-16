@@ -13,6 +13,8 @@ import {
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import { STATUS_LABEL, STATUS_STYLE } from "@/lib/appointment-status";
 import CalendarMonthView from "./CalendarMonthView";
+import CalendarWeekView from "./CalendarWeekView";
+import CalendarDayView from "./CalendarDayView";
 import type { ApptRow, ScheduleConfig, BlockedDate } from "./page";
 
 type Filter = "all" | "pending" | "confirmed" | "completed" | "cancelled" | "no_show";
@@ -28,8 +30,8 @@ const FILTERS: { key: Filter; label: string }[] = [
 type View = "list" | "calendar";
 type CalendarMode = "dia" | "semana" | "mes";
 const CALENDAR_MODES: { key: CalendarMode; label: string; enabled: boolean }[] = [
-  { key: "dia", label: "Día", enabled: false },
-  { key: "semana", label: "Semana", enabled: false },
+  { key: "dia", label: "Día", enabled: true },
+  { key: "semana", label: "Semana", enabled: true },
   { key: "mes", label: "Mes", enabled: true },
 ];
 
@@ -53,6 +55,27 @@ export default function CitasClient({
   const [deleting, setDeleting] = useState(false);
   const [view, setView] = useState<View>("list");
   const [calendarMode, setCalendarMode] = useState<CalendarMode>("mes");
+  const [dayViewDate, setDayViewDate] = useState<string | undefined>(undefined);
+  // Se incrementa en cada navegación explícita hacia/dentro de "Día" (clic
+  // en la pestaña o clic en una celda del Mes) y se usa como `key` de
+  // CalendarDayView, para forzar que React lo desmonte y monte de nuevo
+  // aunque calendarMode ya fuera "dia" — si no, su useState(initialDate)
+  // nunca se reevalúa y un segundo clic en "Día" no vuelve a "hoy".
+  const [dayViewKey, setDayViewKey] = useState(0);
+
+  // Un clic directo en la pestaña "Día" siempre parte de "hoy"; solo un
+  // clic en un día del Mes (handleSelectDay) fija una fecha específica.
+  function selectCalendarMode(mode: CalendarMode) {
+    setDayViewDate(undefined);
+    setDayViewKey((k) => k + 1);
+    setCalendarMode(mode);
+  }
+
+  function handleSelectDay(fecha: string) {
+    setDayViewDate(fecha);
+    setDayViewKey((k) => k + 1);
+    setCalendarMode("dia");
+  }
 
   function doAction(fn: (id: string) => Promise<void>, id: string) {
     startTransition(async () => {
@@ -266,7 +289,7 @@ export default function CitasClient({
             {CALENDAR_MODES.map((m) => (
               <button
                 key={m.key}
-                onClick={() => m.enabled && setCalendarMode(m.key)}
+                onClick={() => m.enabled && selectCalendarMode(m.key)}
                 disabled={!m.enabled}
                 title={m.enabled ? undefined : "Próximamente"}
                 className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition-colors ${
@@ -288,6 +311,23 @@ export default function CitasClient({
               appointments={visible}
               scheduleConfig={scheduleConfig}
               blockedDates={blockedDates}
+              onSelectDay={handleSelectDay}
+            />
+          )}
+          {calendarMode === "semana" && (
+            <CalendarWeekView
+              appointments={visible}
+              scheduleConfig={scheduleConfig}
+              blockedDates={blockedDates}
+            />
+          )}
+          {calendarMode === "dia" && (
+            <CalendarDayView
+              key={dayViewKey}
+              appointments={visible}
+              scheduleConfig={scheduleConfig}
+              blockedDates={blockedDates}
+              initialDate={dayViewDate}
             />
           )}
         </div>
