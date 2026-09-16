@@ -78,7 +78,7 @@ export default function Hero() {
               Encuentra tu ser, habita tu vida.
             </p>
             <Button href="/agendar" className="pointer-events-auto mt-8">
-              Agenda tu sesión exploratoria gratuita
+              Agenda tu sesión virtual exploratoria gratuita
             </Button>
           </div>
         </div>

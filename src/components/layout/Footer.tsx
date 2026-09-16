@@ -16,8 +16,6 @@ export default function Footer() {
 
         <p className="max-w-md font-serif text-base text-ink/60">
           Consultoría de psicoterapia y desarrollo humano.
-          <br />
-          Mérida, México.
         </p>
 
         <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-ink/40">

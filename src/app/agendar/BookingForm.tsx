@@ -105,7 +105,7 @@ export default function BookingForm() {
           focus-visible:ring-purple-1 focus-visible:ring-offset-2
           disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {isPending ? "Enviando…" : "Agenda tu sesión exploratoria gratuita"}
+        {isPending ? "Enviando…" : "Agenda tu sesión virtual exploratoria gratuita"}
       </button>
 
       <p className="text-center text-xs text-ink/50">

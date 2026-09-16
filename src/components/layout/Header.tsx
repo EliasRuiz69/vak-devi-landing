@@ -76,7 +76,7 @@ export default function Header() {
               : "border border-white/70 text-white hover:bg-white hover:text-purple-1"
           }`}
         >
-          Agenda tu sesión
+          Agenda tu sesión virtual
         </Link>
       </div>
     </header>

@@ -52,7 +52,7 @@ export default function Services({ services }: { services?: Service[] }) {
           as="p"
           className="max-w-2xl font-serif text-2xl text-ink sm:text-3xl"
         >
-          Cada proceso es único. Aquí algunas formas en que podemos caminar juntos:
+          Cada proceso es único. Aquí algunas formas en que podemos caminar juntos en sesiones virtuales:
         </RevealText>
 
         <div

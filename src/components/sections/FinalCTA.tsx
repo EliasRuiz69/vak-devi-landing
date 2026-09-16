@@ -36,7 +36,7 @@ export default function FinalCTA() {
         </RevealText>
 
         <Button href="/agendar" variant="outline" className="mt-10">
-          Agenda tu sesión exploratoria gratuita
+          Agenda tu sesión virtual exploratoria gratuita
         </Button>
       </div>
     </section>

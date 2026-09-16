@@ -250,7 +250,7 @@ export default function AboutTherapist() {
             href="/agendar"
             className="inline-flex items-center justify-center rounded-full bg-purple-1 px-8 py-4 text-sm tracking-wide text-white transition-colors duration-300 hover:bg-purple-2 sm:text-base"
           >
-            Agenda tu sesión exploratoria gratuita
+            Agenda tu sesión virtual exploratoria gratuita
           </a>
           <a
             href="mailto:conversemos@vakdevi-psicoterapia.com"
