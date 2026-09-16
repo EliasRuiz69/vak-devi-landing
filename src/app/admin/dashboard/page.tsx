@@ -11,27 +11,12 @@ import {
   formatMXN,
 } from "@/lib/admin-utils";
 import { parseTimeMins, formatFechaLong } from "@/lib/schedule-utils";
+import { STATUS_LABEL, STATUS_STYLE } from "@/lib/appointment-status";
 import DashboardCharts from "./DashboardCharts";
 
 export const metadata: Metadata = {
   title: "Dashboard — Vāk Devi",
   robots: { index: false, follow: false },
-};
-
-const STATUS_LABEL: Record<string, string> = {
-  pending: "Pendiente",
-  confirmed: "Confirmada",
-  completed: "Completada",
-  cancelled: "Cancelada",
-  no_show: "No asistió",
-};
-
-const STATUS_COLOR: Record<string, string> = {
-  pending: "bg-amber-50 text-amber-700",
-  confirmed: "bg-blue-50 text-blue-700",
-  completed: "bg-emerald-50 text-emerald-700",
-  cancelled: "bg-gray-100 text-gray-500",
-  no_show: "bg-red-50 text-red-600",
 };
 
 export default async function DashboardPage() {
@@ -206,7 +191,7 @@ export default async function DashboardPage() {
                       {(a.hora_inicio as string).slice(0, 5)} h
                     </p>
                     <span
-                      className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${STATUS_COLOR[a.estado as string]}`}
+                      className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${STATUS_STYLE[a.estado as string]}`}
                     >
                       {STATUS_LABEL[a.estado as string]}
                     </span>

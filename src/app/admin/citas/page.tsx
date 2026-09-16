@@ -26,16 +26,34 @@ export type ApptRow = {
   servicioId: string;
 };
 
+export type ScheduleConfig = {
+  dias_laborables: number[];
+};
+
+export type BlockedDate = {
+  id: string;
+  fecha: string;
+  fecha_fin: string;
+  hora_inicio: string | null;
+  hora_fin: string | null;
+  motivo: string | null;
+};
+
 export default async function CitasPage() {
   const admin = createAdminClient();
 
-  const [{ data: appts }, { data: services }] = await Promise.all([
+  const [{ data: appts }, { data: services }, { data: cfg }, { data: blocked }] = await Promise.all([
     admin
       .from("appointments")
       .select("*, services(id, nombre)")
       .order("fecha", { ascending: false })
       .order("hora_inicio", { ascending: true }),
     admin.from("services").select("id, nombre").eq("activo", true).order("orden"),
+    admin.from("schedule_config").select("dias_laborables").eq("activo", true).single(),
+    admin
+      .from("blocked_dates")
+      .select("id, fecha, fecha_fin, hora_inicio, hora_fin, motivo")
+      .order("fecha"),
   ]);
 
   const rows: ApptRow[] = (appts ?? []).map((a) => ({
@@ -58,6 +76,19 @@ export default async function CitasPage() {
   const serviceOptions = (services ?? []).map((s) => ({
     id: s.id as string,
     nombre: s.nombre as string,
+  }));
+
+  const scheduleConfig: ScheduleConfig | null = cfg
+    ? { dias_laborables: cfg.dias_laborables as number[] }
+    : null;
+
+  const blockedDates: BlockedDate[] = (blocked ?? []).map((b) => ({
+    id: b.id as string,
+    fecha: b.fecha as string,
+    fecha_fin: b.fecha_fin as string,
+    hora_inicio: b.hora_inicio as string | null,
+    hora_fin: b.hora_fin as string | null,
+    motivo: b.motivo as string | null,
   }));
 
   return (
@@ -83,7 +114,12 @@ export default async function CitasPage() {
         </Link>
       </div>
 
-      <CitasClient appointments={rows} serviceOptions={serviceOptions} />
+      <CitasClient
+        appointments={rows}
+        serviceOptions={serviceOptions}
+        scheduleConfig={scheduleConfig}
+        blockedDates={blockedDates}
+      />
     </div>
   );
 }

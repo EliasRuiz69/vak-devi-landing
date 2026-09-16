@@ -11,23 +11,9 @@ import {
   deleteAppointment,
 } from "@/app/actions/admin";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
-import type { ApptRow } from "./page";
-
-const STATUS_LABEL: Record<string, string> = {
-  pending: "Pendiente",
-  confirmed: "Confirmada",
-  completed: "Completada",
-  cancelled: "Cancelada",
-  no_show: "No asistió",
-};
-
-const STATUS_STYLE: Record<string, string> = {
-  pending: "bg-amber-50 text-amber-700 border-amber-200",
-  confirmed: "bg-blue-50 text-blue-700 border-blue-200",
-  completed: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  cancelled: "bg-gray-100 text-gray-500 border-gray-200",
-  no_show: "bg-red-50 text-red-600 border-red-200",
-};
+import { STATUS_LABEL, STATUS_STYLE } from "@/lib/appointment-status";
+import CalendarMonthView from "./CalendarMonthView";
+import type { ApptRow, ScheduleConfig, BlockedDate } from "./page";
 
 type Filter = "all" | "pending" | "confirmed" | "completed" | "cancelled" | "no_show";
 const FILTERS: { key: Filter; label: string }[] = [
@@ -39,12 +25,24 @@ const FILTERS: { key: Filter; label: string }[] = [
   { key: "no_show", label: "No asistió" },
 ];
 
+type View = "list" | "calendar";
+type CalendarMode = "dia" | "semana" | "mes";
+const CALENDAR_MODES: { key: CalendarMode; label: string; enabled: boolean }[] = [
+  { key: "dia", label: "Día", enabled: false },
+  { key: "semana", label: "Semana", enabled: false },
+  { key: "mes", label: "Mes", enabled: true },
+];
+
 export default function CitasClient({
   appointments,
   serviceOptions,
+  scheduleConfig,
+  blockedDates,
 }: {
   appointments: ApptRow[];
   serviceOptions: { id: string; nombre: string }[];
+  scheduleConfig: ScheduleConfig | null;
+  blockedDates: BlockedDate[];
 }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -53,6 +51,8 @@ export default function CitasClient({
   const [svcFilter, setSvcFilter] = useState("");
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [view, setView] = useState<View>("list");
+  const [calendarMode, setCalendarMode] = useState<CalendarMode>("mes");
 
   function doAction(fn: (id: string) => Promise<void>, id: string) {
     startTransition(async () => {
@@ -94,6 +94,30 @@ export default function CitasClient({
 
   return (
     <>
+      {/* Lista/Calendario toggle */}
+      <div className="mb-4 flex gap-1.5">
+        <button
+          onClick={() => setView("list")}
+          className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+            view === "list"
+              ? "bg-purple-1 text-white"
+              : "border border-ink/15 text-ink/55 hover:border-purple-3 hover:text-ink"
+          }`}
+        >
+          Lista
+        </button>
+        <button
+          onClick={() => setView("calendar")}
+          className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+            view === "calendar"
+              ? "bg-purple-1 text-white"
+              : "border border-ink/15 text-ink/55 hover:border-purple-3 hover:text-ink"
+          }`}
+        >
+          Calendario
+        </button>
+      </div>
+
       {/* Filters row */}
       <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         {/* Status filter pills */}
@@ -138,7 +162,7 @@ export default function CitasClient({
       </div>
 
       {/* List */}
-      {visible.length === 0 ? (
+      {view === "list" && (visible.length === 0 ? (
         <div className="rounded-2xl border border-ink/8 bg-white px-8 py-16 text-center">
           <p className="font-serif text-lg text-ink/35">No hay citas con estos filtros.</p>
         </div>
@@ -231,6 +255,41 @@ export default function CitasClient({
               </div>
             </div>
           ))}
+        </div>
+      ))}
+
+      {/* Calendar */}
+      {view === "calendar" && (
+        <div className="flex flex-col gap-4">
+          {/* Día/Semana/Mes selector */}
+          <div className="flex gap-1.5">
+            {CALENDAR_MODES.map((m) => (
+              <button
+                key={m.key}
+                onClick={() => m.enabled && setCalendarMode(m.key)}
+                disabled={!m.enabled}
+                title={m.enabled ? undefined : "Próximamente"}
+                className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                  !m.enabled
+                    ? "cursor-not-allowed border border-ink/8 text-ink/30"
+                    : calendarMode === m.key
+                      ? "bg-purple-1 text-white"
+                      : "border border-ink/15 text-ink/55 hover:border-purple-3 hover:text-ink"
+                }`}
+              >
+                {m.label}
+                {!m.enabled && <span className="text-[9px] uppercase tracking-wide">Próximamente</span>}
+              </button>
+            ))}
+          </div>
+
+          {calendarMode === "mes" && (
+            <CalendarMonthView
+              appointments={visible}
+              scheduleConfig={scheduleConfig}
+              blockedDates={blockedDates}
+            />
+          )}
         </div>
       )}
 
