@@ -47,6 +47,29 @@ All GSAP plugins are registered once in [src/lib/gsap.ts](src/lib/gsap.ts) — a
 
 **Service images**: `services.imagen_url` (Supabase, `text`, nullable) stores the full public Supabase Storage URL for a service's image. Files live in the public `servicios` bucket (created manually in Supabase Studio — see `supabase/migrations/005_imagen_servicios.sql` for the column and a note on the bucket). All reads/writes go through `createAdminClient()` (service role key) via `uploadServiceImage`/`deleteServiceImage` in `src/app/actions/admin.ts` — never exposed to the browser. Accepted types: `image/jpeg`, `image/png`, `image/webp`; max 5MB, validated both client-side (`ServiciosClient.tsx`) and server-side (re-validated in `uploadServiceImage`, since the client check can be bypassed). Next.js's own Server Actions body-size limit is raised in `next.config.ts` (`experimental.serverActions.bodySizeLimit: "6mb"` — headroom above the 5MB business rule to cover multipart overhead). Stored filename is `crypto.randomUUID()` + the original extension, never the original filename. Replacing an image deletes the previous file from the bucket after a successful save — best-effort, logged to console on failure, never blocking the form.
 
+## Admin panel
+
+`src/app/admin/` — every mutation goes through server actions in `src/app/actions/admin.ts`, gated by `assertAdmin()` (Supabase auth session check).
+
+**Citas** (`/admin/citas`):
+- `CitasClient.tsx` renders a Lista/Calendario toggle above the existing status/search/service filters. Both views consume the same filtered `visible` array — switching views never re-filters or duplicates that logic.
+- Calendario has its own Día/Semana/Mes selector, backed by three separate components: `CalendarMonthView.tsx`, `CalendarWeekView.tsx`, `CalendarDayView.tsx`. Each keeps its own navigation state (the day/week/month currently shown), initialized from `getTodayMerida()` — none of the three are synced to each other.
+- All three pull their date math from pure functions in `src/lib/admin-utils.ts`:
+  - `getTodayMerida()` — "today" in `America/Merida`, avoids midnight-boundary bugs from using the server/browser's local time.
+  - `getCalendarWeekStart(fecha)` — Monday of the **calendar week** (7 full days, Mon–Sun) containing `fecha`. Distinct from `getWeekStart`, which is the **working week** (Monday–Friday) used by `countWorkingDays` / the dashboard — don't conflate the two.
+  - `getMonthGrid(year, month)` — full month grid as `string[][]` (weeks of 7 ISO dates, including previous/next month padding), built on `getCalendarWeekStart` + `addDays`.
+  - `addDays(fecha, n)` — generic date arithmetic (`n` can be negative); `subtractDays` delegates to it.
+  - `getDateBlockInfo(fecha, blockedDates)` — resolves `blocked_dates` rows for a date into `{ bloqueoTotal, motivoTotal, bloqueosParciales }`, distinguishing a full-day block (`hora_inicio` NULL) from a partial-hour block (`hora_inicio`/`hora_fin` set, always with `fecha === fecha_fin`). Reused as-is by Mes, Semana and Día — never reimplement this distinction inside a component.
+  - `src/app/admin/citas/day-appointments.ts` (`getDayCalendarData`) — filters + sorts a single day's appointments by `hora_inicio`; reused by Semana and Día (Mes keeps its own inline filter, predating this helper — not worth touching).
+- Status label/color come from `src/lib/appointment-status.ts` (`STATUS_LABEL`, `STATUS_STYLE`) — the single source of truth, also imported by `/admin/dashboard`. Never redefine these locally in a component.
+
+**Alta manual** (`/admin/citas-nueva`):
+- `NuevaCitaForm.tsx` uses `@headlessui/react`'s `Combobox` to search existing clients by name and autofill email/phone — **the project's first and only UI library dependency**; everything else in the admin panel is hand-rolled Tailwind.
+- `createManualAppointment` (`src/app/actions/admin.ts`) requires the submitted email to match an existing row in `clients` — if it doesn't, validation fails with a field error pointing to the Clientes tab. This is a deliberate business rule **exclusive to this admin flow**. ⚠️ The public booking flow (`/agendar` → `schedule.ts`) has no such restriction and must keep creating new clients freely — never port this validation there.
+- Unlike `/agendar`, the manual form allows past dates (no `min` on the date input) — meant for logging sessions that already happened outside the online system.
+
+**Appointment emails**: `src/lib/notify-appointment.ts` (`sendAppointmentEmails`) centralizes the Resend send (client confirmation + therapist notification, `Promise.allSettled`, non-blocking — logs on failure, never blocks the booking/creation). Used by both `schedule.ts` (public flow) and `createManualAppointment` (`admin.ts`). The admin flow skips the call entirely when the appointment's `fecha` is before `getTodayMerida()` — a manual entry for a past date never triggers "we're looking forward to seeing you" emails.
+
 ## Design tokens
 
 Defined as CSS vars in [src/app/globals.css](src/app/globals.css), exposed to Tailwind via `@theme inline`:
@@ -69,6 +92,6 @@ Stored in `public/hero/`:
 
 `connect-1` is Texture 1 (default view); `connect-2` blends in as the cursor moves across the hero.
 
-## Part 2 (not yet implemented)
+## Scheduling system
 
-`src/app/agendar/page.tsx` is a placeholder for the Supabase booking + Resend email flow. Do not implement until the user explicitly requests it.
+The Supabase booking + Resend email flow is **fully implemented and in production** — `src/app/agendar/page.tsx` is no longer a placeholder. The public flow is `BookingWizard.tsx` + `src/app/actions/schedule.ts`; the admin-side management (Calendar views, manual entry, appointment emails) is documented in **Admin panel** above. `src/app/agendar/BookingForm.tsx` is the orphaned pre-wizard file already noted under "Content data" — not the active implementation.
