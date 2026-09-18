@@ -1,7 +1,6 @@
 "use server";
 
 import { createAdminClient } from "@/lib/supabase-admin";
-import { Resend } from "resend";
 import {
   addMinutes,
   formatFechaLong,
@@ -9,12 +8,7 @@ import {
   parseTimeMins,
   slotsOverlap,
 } from "@/lib/schedule-utils";
-import {
-  appointmentNotificationHtml,
-  appointmentConfirmationHtml,
-} from "@/lib/email-templates";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { sendAppointmentEmails } from "@/lib/notify-appointment";
 
 export type AppointmentState = {
   success: boolean;
@@ -182,43 +176,18 @@ export async function createAppointment(
   if (clientError) console.error("[clients] upsert error:", clientError);
 
   // Send emails (non-blocking — don't fail the booking if email fails)
-  const from = process.env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev";
-  const therapistEmail = process.env.THERAPIST_EMAIL!;
   const fechaLong = formatFechaLong(raw.fecha);
 
-  const emailResults = await Promise.allSettled([
-    resend.emails.send({
-      from,
-      to: therapistEmail,
-      subject: `Nueva cita — ${raw.nombre} — ${fechaLong}`,
-      html: appointmentNotificationHtml({
-        nombre: raw.nombre,
-        email: raw.email,
-        telefono: raw.telefono,
-        servicio: service.nombre as string,
-        fecha: fechaLong,
-        hora: raw.hora,
-        duracion: service.duracion_minutos as number,
-        motivo: raw.motivo,
-      }),
-    }),
-    resend.emails.send({
-      from,
-      to: raw.email,
-      subject: "Tu cita ha sido reservada — Vak Devi",
-      html: appointmentConfirmationHtml({
-        nombre: raw.nombre,
-        servicio: service.nombre as string,
-        fecha: fechaLong,
-        hora: raw.hora,
-        duracion: service.duracion_minutos as number,
-      }),
-    }),
-  ]);
-  for (const r of emailResults) {
-    if (r.status === "rejected") console.error("[Resend] email error:", r.reason);
-    else if (r.value.error) console.error("[Resend] API error:", r.value.error);
-  }
+  await sendAppointmentEmails({
+    nombre: raw.nombre,
+    email: raw.email,
+    telefono: raw.telefono,
+    servicio: service.nombre as string,
+    duracion: service.duracion_minutos as number,
+    fechaLong,
+    hora: raw.hora,
+    motivo: raw.motivo,
+  });
 
   return {
     success: true,

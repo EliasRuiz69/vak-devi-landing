@@ -3,7 +3,9 @@
 import { createAdminClient } from "@/lib/supabase-admin";
 import { createAuthClient } from "@/lib/supabase-server";
 import { revalidatePath } from "next/cache";
-import { addMinutes } from "@/lib/schedule-utils";
+import { addMinutes, formatFechaLong } from "@/lib/schedule-utils";
+import { getTodayMerida } from "@/lib/admin-utils";
+import { sendAppointmentEmails } from "@/lib/notify-appointment";
 
 async function assertAdmin() {
   const supabase = await createAuthClient();
@@ -137,6 +139,22 @@ export async function createManualAppointment(
     { onConflict: "email" },
   );
   if (clientError) console.error("[clients] upsert error:", clientError);
+
+  // Correos (no bloqueantes, mismo patrón que /agendar) — solo si la cita
+  // es de hoy o futura; una cita manual con fecha pasada no debe generar
+  // un correo que diga "te esperamos" para algo que ya ocurrió.
+  if (raw.fecha >= getTodayMerida()) {
+    await sendAppointmentEmails({
+      nombre: raw.nombre,
+      email: raw.email,
+      telefono: raw.telefono,
+      servicio: service.nombre as string,
+      duracion: service.duracion_minutos as number,
+      fechaLong: formatFechaLong(raw.fecha),
+      hora: raw.hora,
+      motivo: raw.motivo,
+    });
+  }
 
   revalidatePath("/admin", "layout");
   return { success: true, error: null };
