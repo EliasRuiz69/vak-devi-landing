@@ -283,6 +283,7 @@ export async function reorderServices(
   const failed = results.find((r) => r.error);
   if (failed?.error) return { error: failed.error.message, success: false };
   revalidatePath("/admin/servicios");
+  revalidatePath("/");
   revalidatePath("/agendar");
   return { error: null, success: true };
 }
