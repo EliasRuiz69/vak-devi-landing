@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://www.vakdevi-psicoterapia.com"),
   title: "Vāk Devi — Encuentra tu ser, habita tu vida",
   description:
-    "Vak Devi es un espacio de acompañamiento terapéutico y desarrollo humano en Mérida, México, donde aprendes a habitar quien realmente eres.",
+    "Vak Devi es un espacio de acompañamiento terapéutico y desarrollo integral en Mérida, México, donde aprendes a habitar quien realmente eres.",
 };
 
 export default function RootLayout({

@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Política de Cookies – Vak Devi",
   description:
-    "Política de Cookies de Vak Devi, consultoría de psicoterapia y desarrollo humano con sede en Mérida, Yucatán, México.",
+    "Política de Cookies de Vak Devi, consultoría en psicoterapia y desarrollo integral con sede en Mérida, Yucatán, México.",
 };
 
 export default function PoliticaDeCookies() {
