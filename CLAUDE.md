@@ -15,8 +15,8 @@ pnpm dev
 
 ```powershell
 pnpm dev          # dev server → http://localhost:3000
-pnpm build        # production build (type-checks + lint)
-pnpm lint         # ESLint only
+pnpm build        # production build (type-checks; Next 16 does not run lint here)
+pnpm lint         # ESLint only — currently has pre-existing errors (react-hooks/set-state-in-effect, no-unescaped-entities)
 ```
 
 If `pnpm dev` fails with "port in use", kill the hanging process first:
@@ -41,7 +41,10 @@ All GSAP plugins are registered once in [src/lib/gsap.ts](src/lib/gsap.ts) — a
 
 **Text animations**: `RevealText.tsx` wraps GSAP SplitText (`type:"lines"`). It wraps each line in a `willChange: transform` span and animates `yPercent: 110 → 0` with `expo.out`. The H1 uses `trigger="load"` (fires immediately); sections use `trigger="scroll"` (ScrollTrigger at `top 85%`). Pass only a plain string as children — SplitText treats U+2026 `…` as a single character; do not use three ASCII periods `...`.
 
-**Content data**: the public Services section reads live from the Supabase `services` table via `ServicesSection.tsx` (server component, `createAdminClient()`), which maps rows to the `Service` type and passes them into `Services.tsx` → `ServiceCard.tsx`. `src/content/services.ts` is **not** the data source for the public page anymore — it only supplies the `Service` TypeScript type; its static `staticServices` array is a fallback inside `Services.tsx` (`services ?? staticServices`) that never activates in production, since `ServicesSection.tsx` always passes real data. The `premium: true` flag renders a "Destacado" badge; `tools` (pills) is not currently populated from Supabase — the `services` table has no `tools` column, so `ServicesSection.tsx` always maps `tools: undefined`.
+**Content data**: the source of truth for services is the Supabase `services` table, read in `ServicesSection.tsx` (server component, `createAdminClient()`), which maps rows to the `Service` type and passes them into `Services.tsx` → `ServiceCard.tsx`. `src/content/services.ts` only defines the `Service` TypeScript type — its static `staticServices` array is an inactive fallback inside `Services.tsx` (`services ?? staticServices`) that never runs in production, since `ServicesSection.tsx` always passes real data.
+- The `es_premium` column (mapped to `premium` in the `Service` type) renders a **"Destacado"** badge.
+- The `is_promo` column (boolean, NOT NULL, default `false`; migration `006_servicios_promo.sql`, mapped to `promo`) marks a promotion: `Services.tsx` removes that service from the regular list and renders it only in the "Promociones" block (an `h3`, placed before the regular list). The card gets a 2px `gold` border and a "Promoción" label (gold background, `ink` text — never white). With `premium` and `promo` together, "Promoción" sits on the left and "Destacado" on the right. If no service is in promotion, the block is not rendered at all. Both grids are animated via `[data-service-grid]` / `[data-service-card]` attributes (not `:scope > div`).
+- `tools` (pills) are **not displayed today**: the `services` table has no `tools` column, so `ServicesSection.tsx` always maps `tools: undefined`.
 
 ⚠️ `src/app/agendar/BookingForm.tsx` still imports `services` (the array itself, not just the type) from `src/content/services.ts` — but that file is orphaned: no active route imports `BookingForm.tsx` (the real `/agendar` flow uses `BookingWizard.tsx` + `schedule.ts`). Candidate for future cleanup, not touched here.
 
@@ -63,6 +66,8 @@ All GSAP plugins are registered once in [src/lib/gsap.ts](src/lib/gsap.ts) — a
   - `src/app/admin/citas/day-appointments.ts` (`getDayCalendarData`) — filters + sorts a single day's appointments by `hora_inicio`; reused by Semana and Día (Mes keeps its own inline filter, predating this helper — not worth touching).
 - Status label/color come from `src/lib/appointment-status.ts` (`STATUS_LABEL`, `STATUS_STYLE`) — the single source of truth, also imported by `/admin/dashboard`. Never redefine these locally in a component.
 
+**Servicios** (`/admin/servicios`): `ServiciosClient.tsx` holds the drag-and-drop list and the edit form, including the "En promoción" switch (`is_promo`) and the gold "Promoción" badge in the list. Saving goes through `updateService`/`createService`, and `reorderServices` revalidates `/`, `/admin/servicios` and `/agendar`, so the landing reflects order and promotion changes.
+
 **Alta manual** (`/admin/citas-nueva`):
 - `NuevaCitaForm.tsx` uses `@headlessui/react`'s `Combobox` to search existing clients by name and autofill email/phone — **the project's first and only UI library dependency**; everything else in the admin panel is hand-rolled Tailwind.
 - `createManualAppointment` (`src/app/actions/admin.ts`) requires the submitted email to match an existing row in `clients` — if it doesn't, validation fails with a field error pointing to the Clientes tab. This is a deliberate business rule **exclusive to this admin flow**. ⚠️ The public booking flow (`/agendar` → `schedule.ts`) has no such restriction and must keep creating new clients freely — never port this validation there.
@@ -81,6 +86,7 @@ Defined as CSS vars in [src/app/globals.css](src/app/globals.css), exposed to Ta
 | `purple-3` | `#9B4DAB` | Decorative lines, card borders |
 | `ink` | `#2A1230` | Body text, hero gradient — never use pure black |
 | `lavender` | `#F5F0FA` | Page background |
+| `gold` | `#B8891F` | Promotions only: card border + "Promoción" label (label text is always `ink`) |
 
 Fonts: `--font-serif` = Playfair Display (titles, hero H1, italic subtitles), `--font-sans` = Inter (body). Both loaded via `next/font/google` in `layout.tsx`.
 
