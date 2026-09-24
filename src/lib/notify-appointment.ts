@@ -4,8 +4,6 @@ import {
   appointmentConfirmationHtml,
 } from "@/lib/email-templates";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export type AppointmentEmailData = {
   nombre: string;
   email: string;
@@ -23,6 +21,16 @@ export type AppointmentEmailData = {
 export async function sendAppointmentEmails(data: AppointmentEmailData): Promise<void> {
   const from = process.env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev";
   const therapistEmail = process.env.THERAPIST_EMAIL!;
+
+  // Se crea aquí, no a nivel de módulo: RESEND_API_KEY solo existe en runtime
+  // y `new Resend()` lanza si falta, lo que rompía `next build` en Docker.
+  let resend: Resend;
+  try {
+    resend = new Resend(process.env.RESEND_API_KEY);
+  } catch (err) {
+    console.error("[Resend] email error:", err);
+    return;
+  }
 
   const emailResults = await Promise.allSettled([
     resend.emails.send({
