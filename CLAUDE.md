@@ -24,6 +24,8 @@ If `pnpm dev` fails with "port in use", kill the hanging process first:
 taskkill /PID <pid> /F
 ```
 
+⚠️ **Local build ≠ Dokploy build.** `pnpm build` locally sees *every* variable in `.env.local`, but the Dockerfile used by Dokploy only passes the Supabase variables at build time (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and the `SUPABASE_SERVICE_ROLE_KEY` secret). `RESEND_API_KEY`, `RESEND_FROM_EMAIL` and `THERAPIST_EMAIL` exist only at runtime. So code that initializes an external client (Resend or any other SDK) **at module level** — outside a function — can pass the local build and still fail in Dokploy, because Next evaluates route modules while collecting page data. Always create such clients **inside the function that uses them**, never at module level, as `src/lib/notify-appointment.ts` does (fix `5630ed9`; the module-level `new Resend(...)` introduced in `6825e8e` broke the Dokploy build with `Missing API key`). `createAdminClient()` in `src/lib/supabase-admin.ts` follows the same rule.
+
 ## Architecture
 
 Next.js 16 App Router, TypeScript, Tailwind v4, React 19.
@@ -45,8 +47,6 @@ All GSAP plugins are registered once in [src/lib/gsap.ts](src/lib/gsap.ts) — a
 - The `es_premium` column (mapped to `premium` in the `Service` type) renders a **"Destacado"** badge.
 - The `is_promo` column (boolean, NOT NULL, default `false`; migration `006_servicios_promo.sql`, mapped to `promo`) marks a promotion: `Services.tsx` removes that service from the regular list and renders it only in the "Promociones" block (an `h3`, placed before the regular list). The card gets a 2px `gold` border and a "Promoción" label (gold background, `ink` text — never white). With `premium` and `promo` together, "Promoción" sits on the left and "Destacado" on the right. If no service is in promotion, the block is not rendered at all. Both grids are animated via `[data-service-grid]` / `[data-service-card]` attributes (not `:scope > div`).
 - `tools` (pills) are **not displayed today**: the `services` table has no `tools` column, so `ServicesSection.tsx` always maps `tools: undefined`.
-
-⚠️ `src/app/agendar/BookingForm.tsx` still imports `services` (the array itself, not just the type) from `src/content/services.ts` — but that file is orphaned: no active route imports `BookingForm.tsx` (the real `/agendar` flow uses `BookingWizard.tsx` + `schedule.ts`). Candidate for future cleanup, not touched here.
 
 **Service images**: `services.imagen_url` (Supabase, `text`, nullable) stores the full public Supabase Storage URL for a service's image. Files live in the public `servicios` bucket (created manually in Supabase Studio — see `supabase/migrations/005_imagen_servicios.sql` for the column and a note on the bucket). All reads/writes go through `createAdminClient()` (service role key) via `uploadServiceImage`/`deleteServiceImage` in `src/app/actions/admin.ts` — never exposed to the browser. Accepted types: `image/jpeg`, `image/png`, `image/webp`; max 5MB, validated both client-side (`ServiciosClient.tsx`) and server-side (re-validated in `uploadServiceImage`, since the client check can be bypassed). Next.js's own Server Actions body-size limit is raised in `next.config.ts` (`experimental.serverActions.bodySizeLimit: "6mb"` — headroom above the 5MB business rule to cover multipart overhead). Stored filename is `crypto.randomUUID()` + the original extension, never the original filename. Replacing an image deletes the previous file from the bucket after a successful save — best-effort, logged to console on failure, never blocking the form.
 
@@ -100,4 +100,4 @@ Stored in `public/hero/`:
 
 ## Scheduling system
 
-The Supabase booking + Resend email flow is **fully implemented and in production** — `src/app/agendar/page.tsx` is no longer a placeholder. The public flow is `BookingWizard.tsx` + `src/app/actions/schedule.ts`; the admin-side management (Calendar views, manual entry, appointment emails) is documented in **Admin panel** above. `src/app/agendar/BookingForm.tsx` is the orphaned pre-wizard file already noted under "Content data" — not the active implementation.
+The Supabase booking + Resend email flow is **fully implemented and in production** — `src/app/agendar/page.tsx` is no longer a placeholder. The public flow is `BookingWizard.tsx` + `src/app/actions/schedule.ts`; the admin-side management (Calendar views, manual entry, appointment emails) is documented in **Admin panel** above. The old pre-wizard chain (`BookingForm.tsx` → `actions/booking.ts` → `lib/supabase.ts`) was orphaned dead code and has been deleted.
