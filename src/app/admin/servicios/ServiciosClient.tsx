@@ -266,6 +266,11 @@ function ServiceCard({
                 Premium
               </span>
             )}
+            {svc.is_promo && (
+              <span className="rounded-full bg-gold px-2 py-0.5 text-[10px] font-medium text-ink">
+                Promoción
+              </span>
+            )}
             {!svc.activo && (
               <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] text-gray-400">
                 Inactivo
@@ -339,6 +344,7 @@ function ServiceForm({
     duracion_minutos: initial?.duracion_minutos ?? 60,
     precio_mxn: initial?.precio_mxn ?? null,
     es_premium: initial?.es_premium ?? false,
+    is_promo: initial?.is_promo ?? false,
     orden: initial?.orden ?? 99,
     imagen_url: initial?.imagen_url ?? null,
   });
@@ -450,6 +456,23 @@ function ServiceForm({
               className="accent-purple-1"
             />
             <span className="text-sm text-ink/70">Marcar como Premium</span>
+          </label>
+        </FormField>
+
+        <FormField label="Promoción">
+          <label className="flex items-center gap-3 cursor-pointer mt-1">
+            <input
+              type="checkbox"
+              role="switch"
+              checked={form.is_promo}
+              onChange={(e) => setForm({ ...form, is_promo: e.target.checked })}
+              className="peer sr-only"
+            />
+            <span
+              aria-hidden
+              className="relative h-5 w-9 shrink-0 rounded-full bg-ink/20 transition-colors after:absolute after:left-0.5 after:top-0.5 after:h-4 after:w-4 after:rounded-full after:bg-white after:transition-transform peer-checked:bg-gold peer-checked:after:translate-x-4 peer-focus-visible:ring-2 peer-focus-visible:ring-purple-3"
+            />
+            <span className="text-sm text-ink/70">En promoción</span>
           </label>
         </FormField>
 

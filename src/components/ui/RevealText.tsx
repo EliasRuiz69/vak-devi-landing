@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { gsap, ScrollTrigger, SplitText } from "@/lib/gsap";
 
-type AllowedTag = "div" | "p" | "h1" | "h2" | "span";
+type AllowedTag = "div" | "p" | "h1" | "h2" | "h3" | "span";
 
 type RevealTextProps = {
   as?: AllowedTag;

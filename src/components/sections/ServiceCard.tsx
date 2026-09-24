@@ -2,24 +2,40 @@ import Image from "next/image";
 import type { Service } from "@/content/services";
 
 export default function ServiceCard({ service }: { service: Service }) {
-  const { name, description, premium, tools, image } = service;
+  const { name, description, premium, promo, tools, image } = service;
 
   return (
     <article
       className={`group relative flex h-full flex-col rounded-2xl border p-8 transition-all duration-300 ${
-        premium
-          ? "border-purple-1 bg-white shadow-[0_0_0_1px_rgba(139,30,160,0.15)]"
-          : "border-purple-3/20 bg-white hover:border-purple-3/50 hover:shadow-lg"
+        promo
+          ? "border-2 border-gold bg-white shadow-[0_0_24px_rgba(184,137,31,0.28)]"
+          : premium
+            ? "border-purple-1 bg-white shadow-[0_0_0_1px_rgba(139,30,160,0.15)]"
+            : "border-purple-3/20 bg-white hover:border-purple-3/50 hover:shadow-lg"
       }`}
     >
+      {promo && (
+        <span className="absolute -top-3 left-8 z-30 rounded-full bg-gold px-3 py-1 text-xs font-semibold tracking-wide text-ink shadow-md">
+          Promoción
+        </span>
+      )}
+
       {premium && (
-        <span className="absolute -top-3 left-8 z-20 rounded-full bg-purple-1 px-3 py-1 text-xs font-medium tracking-wide text-white shadow-md">
+        <span
+          className={`absolute -top-3 z-20 rounded-full bg-purple-1 px-3 py-1 text-xs font-medium tracking-wide text-white shadow-md ${
+            promo ? "right-8" : "left-8"
+          }`}
+        >
           Destacado
         </span>
       )}
 
       {image && (
-        <div className="relative -mx-8 -mt-8 mb-6 aspect-[16/10] overflow-hidden rounded-t-2xl bg-lavender">
+        <div
+          className={`relative -mx-8 -mt-8 mb-6 aspect-[16/10] overflow-hidden bg-lavender ${
+            promo ? "rounded-t-[14px]" : "rounded-t-2xl"
+          }`}
+        >
           <Image
             src={image}
             alt=""

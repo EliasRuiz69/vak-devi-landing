@@ -7,7 +7,7 @@ export default async function ServicesSection() {
   const admin = createAdminClient();
   const { data } = await admin
     .from("services")
-    .select("id, nombre, descripcion, es_premium, imagen_url")
+    .select("id, nombre, descripcion, es_premium, is_promo, imagen_url")
     .eq("activo", true)
     .order("orden");
 
@@ -16,6 +16,7 @@ export default async function ServicesSection() {
     name: s.nombre as string,
     description: s.descripcion as string,
     premium: (s.es_premium ?? false) as boolean,
+    promo: (s.is_promo ?? false) as boolean,
     tools: undefined,
     image: (s.imagen_url as string | null) ?? undefined,
   }));

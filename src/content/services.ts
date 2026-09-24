@@ -3,6 +3,7 @@ export type Service = {
   name: string;
   description: string;
   premium?: boolean;
+  promo?: boolean;
   tools?: string[];
   image?: string;
 };

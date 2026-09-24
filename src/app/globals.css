@@ -7,6 +7,7 @@
   --white: #ffffff;
   --lavender: #f5f0fa;
   --ink: #2a1230;
+  --gold: #b8891f;
 
   --background: var(--lavender);
   --foreground: var(--ink);
@@ -18,6 +19,7 @@
   --color-purple-3: var(--purple-3);
   --color-lavender: var(--lavender);
   --color-ink: var(--ink);
+  --color-gold: var(--gold);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 

@@ -170,6 +170,7 @@ export type ServiceData = {
   duracion_minutos: number;
   precio_mxn: number | null;
   es_premium: boolean;
+  is_promo: boolean;
   activo: boolean;
   orden: number;
   imagen_url: string | null;
