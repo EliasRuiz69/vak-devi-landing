@@ -7,8 +7,9 @@ import RevealText from "@/components/ui/RevealText";
 
 const CREDENTIALS = [
   "Maestría en Psicoterapia Ericksoniana — Centro Ericksoniano de México (CEM)",
+  "DEA/Maestría en Educación Ambiental — Universidad de Sevilla, España",
+  "Evaluadora certificada EQ-i 2.0 · EQ-360 / Coach en Inteligencia Emocional (MHS)",
   "Diplomada en Constelaciones Familiares Ericksonianas (CEM)",
-  "Evaluadora certificada EQ-i 2.0 · EQ-360  /  Coach en Inteligencia Emocional (MHS)",
   "Capacitadora y tallerista en educación y crecimiento humano",
 ];
 
@@ -97,14 +98,14 @@ export default function AboutTherapist() {
         <div className="grid gap-16 lg:grid-cols-[2fr_3fr] lg:gap-24">
 
           {/* Photo */}
-          <div data-reveal className="flex items-start justify-center lg:justify-start">
-            <div className="relative aspect-[3/4] w-full max-w-[280px] overflow-hidden rounded-2xl shadow-sm lg:max-w-full">
+          <div data-reveal className="flex items-start justify-center lg:items-center">
+            <div className="relative aspect-[3/4] w-full max-w-[200px] overflow-hidden rounded-2xl shadow-sm lg:w-1/2 lg:max-w-full">
               <Image
                 src="/FotoTerapeutav1.jpeg"
                 alt="Ámbar Escalante"
                 fill
                 className="object-cover object-top"
-                sizes="(max-width: 1024px) 280px, 33vw"
+                sizes="(max-width: 1023px) 200px, 190px"
                 priority
               />
             </div>
@@ -112,39 +113,27 @@ export default function AboutTherapist() {
 
           {/* Opening bio */}
           <div className="flex flex-col gap-7">
-            <RevealText
-              as="p"
-              className="font-serif text-xl font-bold italic text-purple-1 sm:text-2xl"
-            >
-              Mi nombre es Ámbar Escalante.
-            </RevealText>
+            <div className="flex flex-col gap-1">
+              <RevealText
+                as="p"
+                className="font-serif text-xl font-bold italic text-purple-1 sm:text-2xl"
+              >
+                Mtra. Ámbar Escalante.
+              </RevealText>
 
-            <RevealText
-              as="p"
-              className="font-serif text-lg italic leading-relaxed text-ink/75 sm:text-xl"
-            >
-              Hubo un momento en mi vida en que tuve que detenerme y preguntarme quién era yo realmente, más allá de los roles que había aprendido a habitar.
-            </RevealText>
-
-            <RevealText
-              as="p"
-              className="font-serif text-lg italic leading-relaxed text-ink/75 sm:text-xl"
-            >
-              Esa pregunta lo cambió todo. Y desde entonces, acompañar a otras personas en ese mismo camino se convirtió en mi vocación más honesta.
-            </RevealText>
+              <RevealText
+                as="p"
+                className="font-sans text-sm tracking-wide text-ink/60 sm:text-base"
+              >
+                Ced. Prof. 15430744
+              </RevealText>
+            </div>
 
             <RevealText
               as="p"
               className="text-base leading-relaxed text-ink/70 sm:text-lg"
             >
-              Soy Psicoterapeuta Ericksoniana y educadora en temas de crecimiento personal y de apreciación por la naturaleza y la cultura que nos rodea — dimensiones que entiendo como aspectos integrales del ser humano. Esa diversidad no es casualidad: es la base de un enfoque verdaderamente holístico.
-            </RevealText>
-
-            <RevealText
-              as="p"
-              className="text-base leading-relaxed text-ink/70 sm:text-lg"
-            >
-              A lo largo de mi experiencia he acompañado a personas en momentos de crisis, transición y búsqueda: seres que sienten que algo adentro pide ser atendido, y que están listos para mirarlo con profundidad.
+              Psicoterapeuta Ericksoniana y educadora en temas de crecimiento personal y de apreciación por la naturaleza y la cultura que nos rodea.
             </RevealText>
           </div>
         </div>
