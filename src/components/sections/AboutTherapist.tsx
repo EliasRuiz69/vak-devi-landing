@@ -209,7 +209,7 @@ export default function AboutTherapist() {
               delay={0.08}
               className="font-serif text-base italic leading-relaxed text-ink/65 sm:text-lg"
             >
-              A esto se suman años de estudio y práctica de filosofías y tradiciones espirituales de Oriente y Occidente: Cristianismo, Budismo, Shri Vidya, Ontogonía y Chamanismo. Caminos distintos que convergen en una misma comprensión: la dimensión trascendental es parte esencial de quienes somos.
+              A esto se suman años de estudio y práctica de filosofías y tradiciones espirituales de Oriente y Occidente, caminos que convergen en una misma comprensión: la dimensión trascendental es parte esencial de quienes somos.
             </RevealText>
 
             <RevealText
