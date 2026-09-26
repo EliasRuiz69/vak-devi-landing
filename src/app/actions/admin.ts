@@ -390,7 +390,13 @@ export async function deleteClient(email: string): Promise<void> {
 
 // ── CRUD Clientes (CRM) ──────────────────────────────────────────
 
-export type ClientFormState = { error: string | null; success: boolean };
+export type ClientFormState = {
+  error: string | null;
+  success: boolean;
+  // Presente solo cuando el email cambió y update_client_email() corrió con
+  // éxito: número de citas cuyo email_cliente se actualizó junto al cliente.
+  appointmentsUpdated?: number;
+};
 
 export type ClientData = { nombre: string; email: string; telefono: string; notas: string };
 
@@ -414,10 +420,18 @@ export async function createClient(data: ClientData): Promise<ClientFormState> {
 
 export async function updateClient(
   email: string,
-  data: Omit<ClientData, "email">,
+  data: ClientData,
 ): Promise<ClientFormState> {
   await assertAdmin();
-  const { error } = await createAdminClient()
+
+  const newEmail = data.email.trim();
+  if (!newEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
+    return { error: "Introduce un email válido.", success: false };
+  }
+
+  const admin = createAdminClient();
+
+  const { error } = await admin
     .from("clients")
     .update({
       nombre: data.nombre,
@@ -427,6 +441,34 @@ export async function updateClient(
     })
     .eq("email", email);
   if (error) return { error: error.message, success: false };
+
+  // El email no cambió: nada más que hacer.
+  if (newEmail === email) {
+    revalidatePath("/admin", "layout");
+    return { error: null, success: true };
+  }
+
+  // El email sí cambió — update_client_email() (migración 007) actualiza
+  // clients.email y todos los appointments.email_cliente de ese cliente en
+  // una sola transacción atómica. Solo service_role puede invocarla.
+  const { data: appointmentsUpdated, error: rpcError } = await admin.rpc(
+    "update_client_email",
+    { p_old_email: email, p_new_email: newEmail },
+  );
+
+  if (rpcError) {
+    const detail =
+      rpcError.code === "23505"
+        ? "Ya existe un cliente con ese email."
+        : rpcError.code === "P0001"
+          ? rpcError.message
+          : "No se pudo actualizar el email.";
+    return {
+      error: `El nombre, teléfono y notas se guardaron correctamente, pero el email no se pudo cambiar: ${detail}`,
+      success: false,
+    };
+  }
+
   revalidatePath("/admin", "layout");
-  return { error: null, success: true };
+  return { error: null, success: true, appointmentsUpdated: appointmentsUpdated ?? 0 };
 }

@@ -10,7 +10,7 @@ export default function ClientesClient({ clients }: { clients: ClientRow[] }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [search, setSearch] = useState("");
-  const [openEmail, setOpenEmail] = useState<string | null>(null);
+  const [openId, setOpenId] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
   const [confirmDeleteEmail, setConfirmDeleteEmail] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -92,15 +92,15 @@ export default function ClientesClient({ clients }: { clients: ClientRow[] }) {
         ) : (
           visible.map((c) => (
             <ClientCard
-              key={c.email}
+              key={c.id}
               client={c}
-              open={openEmail === c.email}
-              onToggle={() => setOpenEmail(openEmail === c.email ? null : c.email)}
+              open={openId === c.id}
+              onToggle={() => setOpenId(openId === c.id ? null : c.id)}
               onSave={async (data) => {
                 const res = await updateClient(c.email, data);
-                if (!res.success) return res.error;
+                if (!res.success) return { error: res.error };
                 refresh();
-                return null;
+                return { error: null, appointmentsUpdated: res.appointmentsUpdated };
               }}
               onDeleteClick={() => setConfirmDeleteEmail(c.email)}
             />
@@ -136,14 +136,18 @@ function ClientCard({
   client: ClientRow;
   open: boolean;
   onToggle: () => void;
-  onSave: (data: Omit<ClientData, "email">) => Promise<string | null>;
+  onSave: (
+    data: ClientData,
+  ) => Promise<{ error: string | null; appointmentsUpdated?: number }>;
   onDeleteClick: () => void;
 }) {
   const [nombre, setNombre] = useState(client.nombre);
   const [telefono, setTelefono] = useState(client.telefono);
+  const [email, setEmail] = useState(client.email);
   const [notes, setNotes] = useState(client.notas);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   let ultimaLabel = "Sin citas registradas";
   if (client.ultimaSesion) {
@@ -158,8 +162,14 @@ function ClientCard({
   async function handleSave() {
     setSaving(true);
     setError(null);
-    const err = await onSave({ nombre, telefono, notas: notes });
-    if (err) setError(err);
+    setSuccessMsg(null);
+    const res = await onSave({ nombre, email, telefono, notas: notes });
+    if (res.error) {
+      setError(res.error);
+    } else if (res.appointmentsUpdated !== undefined) {
+      const n = res.appointmentsUpdated;
+      setSuccessMsg(`Email actualizado · ${n} cita${n === 1 ? "" : "s"} actualizada${n === 1 ? "" : "s"}`);
+    }
     setSaving(false);
   }
 
@@ -227,6 +237,12 @@ function ClientCard({
             </div>
           )}
 
+          {successMsg && (
+            <div className="rounded-xl bg-green-50 border border-green-200 px-4 py-2.5 text-sm text-green-700">
+              {successMsg}
+            </div>
+          )}
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <FormField label="Nombre">
               <input
@@ -247,9 +263,12 @@ function ClientCard({
             </FormField>
 
             <FormField label="Email" className="sm:col-span-2">
-              <p className="w-full rounded-xl border border-ink/8 bg-white/60 px-3 py-2 text-sm text-ink/50">
-                {client.email}
-              </p>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className={inp}
+              />
             </FormField>
           </div>
 

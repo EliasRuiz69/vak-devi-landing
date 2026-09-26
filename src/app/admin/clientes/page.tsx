@@ -8,6 +8,7 @@ export const metadata: Metadata = {
 };
 
 export type ClientRow = {
+  id: string;
   email: string;
   nombre: string;
   telefono: string;
@@ -22,7 +23,7 @@ export default async function ClientesPage() {
   const admin = createAdminClient();
 
   const [{ data: clients }, { data: appts }] = await Promise.all([
-    admin.from("clients").select("email, nombre, telefono, notas"),
+    admin.from("clients").select("id, email, nombre, telefono, notas"),
     admin
       .from("appointments")
       .select("email_cliente, fecha, services(nombre, precio_mxn)")
@@ -62,6 +63,7 @@ export default async function ClientesPage() {
       const email = c.email as string;
       const stats = statsMap.get(email);
       return {
+        id: c.id as string,
         email,
         nombre: c.nombre as string,
         telefono: (c.telefono as string | null) ?? "",
