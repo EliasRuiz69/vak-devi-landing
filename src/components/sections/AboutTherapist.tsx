@@ -153,7 +153,7 @@ export default function AboutTherapist() {
               as="p"
               className="text-base leading-relaxed text-ink/70 sm:text-lg"
             >
-              Creo en procesos profundos, no en soluciones rápidas. En la escucha antes que en el consejo. En que cada persona lleva adentro los recursos que necesita — y que a veces solo le hace falta tener un espacio seguro para encontrarlos.
+              Creo en procesos profundos, no en soluciones rápidas. En la escucha antes que en el consejo. En que cada persona lleva adentro los recursos que necesita y que a veces solo le hace falta tener un espacio seguro para encontrarlos.
             </RevealText>
 
             <RevealText
