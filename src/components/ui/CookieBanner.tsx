@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-
-const CONSENT_KEY = "vakdevi_cookie_consent";
+import { CONSENT_KEY, setConsent } from "@/lib/cookie-consent";
 
 export default function CookieBanner() {
   const [visible, setVisible] = useState(false);
@@ -17,12 +16,12 @@ export default function CookieBanner() {
   if (!visible) return null;
 
   const handleAccept = () => {
-    localStorage.setItem(CONSENT_KEY, "accepted");
+    setConsent("accepted");
     setVisible(false);
   };
 
   const handleReject = () => {
-    localStorage.setItem(CONSENT_KEY, "rejected");
+    setConsent("rejected");
     setVisible(false);
   };
 

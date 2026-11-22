@@ -24,7 +24,7 @@ If `pnpm dev` fails with "port in use", kill the hanging process first:
 taskkill /PID <pid> /F
 ```
 
-⚠️ **Local build ≠ Dokploy build.** `pnpm build` locally sees *every* variable in `.env.local`, but the Dockerfile used by Dokploy only passes the Supabase variables at build time (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and the `SUPABASE_SERVICE_ROLE_KEY` secret). `RESEND_API_KEY`, `RESEND_FROM_EMAIL` and `THERAPIST_EMAIL` exist only at runtime. So code that initializes an external client (Resend or any other SDK) **at module level** — outside a function — can pass the local build and still fail in Dokploy, because Next evaluates route modules while collecting page data. Always create such clients **inside the function that uses them**, never at module level, as `src/lib/notify-appointment.ts` does (fix `5630ed9`; the module-level `new Resend(...)` introduced in `6825e8e` broke the Dokploy build with `Missing API key`). `createAdminClient()` in `src/lib/supabase-admin.ts` follows the same rule.
+⚠️ **Local build ≠ Dokploy build.** `pnpm build` locally sees *every* variable in `.env.local`, but the Dockerfile used by Dokploy only passes the Supabase variables at build time (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and the `SUPABASE_SERVICE_ROLE_KEY` secret), plus the optional `NEXT_PUBLIC_META_PIXEL_ID` build arg. `RESEND_API_KEY`, `RESEND_FROM_EMAIL` and `THERAPIST_EMAIL` exist only at runtime. So code that initializes an external client (Resend or any other SDK) **at module level** — outside a function — can pass the local build and still fail in Dokploy, because Next evaluates route modules while collecting page data. Always create such clients **inside the function that uses them**, never at module level, as `src/lib/notify-appointment.ts` does (fix `5630ed9`; the module-level `new Resend(...)` introduced in `6825e8e` broke the Dokploy build with `Missing API key`). `createAdminClient()` in `src/lib/supabase-admin.ts` follows the same rule.
 
 ## Architecture
 
@@ -52,6 +52,8 @@ All GSAP plugins are registered once in [src/lib/gsap.ts](src/lib/gsap.ts) — a
 
 **Legal pages**: `src/app/politica-de-cookies/page.tsx` and `src/app/politica-de-privacidad/page.tsx` only hold `metadata` and read `politicas/politica-de-*-vakdevi.html` with `fs.readFileSync` at build time, injecting its `<style>` and `<body>`. So `politicas/` is the **live source of the legal text** (not historical) — edit the HTML there to change the policy copy, not the `page.tsx`.
 
+**Cookie consent & Meta Pixel**: `CookieBanner.tsx` stores the visitor's choice through `setConsent()` in `src/lib/cookie-consent.ts` (localStorage key `vakdevi_cookie_consent` = `accepted` | `rejected`, plus a `vakdevi:consent` window event). `src/components/analytics/MetaPixel.tsx` (mounted in `layout.tsx`) reads it with `useSyncExternalStore` and loads the pixel (`loadMetaPixel` in `src/lib/meta-pixel.ts`) **only** when consent is `accepted` and `NEXT_PUBLIC_META_PIXEL_ID` is set; it sends one `PageView` per route and never runs on `/admin` or `/login`. Never send personal or health data to Meta (name, email, phone, service name) — no advanced matching.
+
 **Service images**: `services.imagen_url` (Supabase, `text`, nullable) stores the full public Supabase Storage URL for a service's image. Files live in the public `servicios` bucket (created manually in Supabase Studio — see `supabase/migrations/005_imagen_servicios.sql` for the column and a note on the bucket). All reads/writes go through `createAdminClient()` (service role key) via `uploadServiceImage`/`deleteServiceImage` in `src/app/actions/admin.ts` — never exposed to the browser. Accepted types: `image/jpeg`, `image/png`, `image/webp`; max 5MB, validated both client-side (`ServiciosClient.tsx`) and server-side (re-validated in `uploadServiceImage`, since the client check can be bypassed). Next.js's own Server Actions body-size limit is raised in `next.config.ts` (`experimental.serverActions.bodySizeLimit: "6mb"` — headroom above the 5MB business rule to cover multipart overhead). Stored filename is `crypto.randomUUID()` + the original extension, never the original filename. Replacing an image deletes the previous file from the bucket after a successful save — best-effort, logged to console on failure, never blocking the form.
 
 ## Routes & auth
@@ -69,6 +71,7 @@ Names only — values live in `.env.local` (git-ignored) and in Dokploy; never w
 | `NEXT_PUBLIC_SUPABASE_URL` | yes | Supabase URL (browser + server) |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | yes | Supabase anon key (auth client, middleware) |
 | `SUPABASE_SERVICE_ROLE_KEY` | yes (BuildKit secret) | `createAdminClient()` — server only |
+| `NEXT_PUBLIC_META_PIXEL_ID` | yes (build arg, optional) | Meta Pixel ID. Inlined at build — set it as a Dokploy **build arg**, not only a runtime env. Unset → `MetaPixel.tsx` renders nothing |
 | `RESEND_API_KEY` | **runtime only** | Resend |
 | `RESEND_FROM_EMAIL` | **runtime only** | Email sender (falls back to `onboarding@resend.dev`) |
 | `THERAPIST_EMAIL` | **runtime only** | Recipient of new-appointment notifications |
