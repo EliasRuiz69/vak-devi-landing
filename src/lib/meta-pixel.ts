@@ -43,3 +43,13 @@ export function loadMetaPixel(pixelId: string): void {
 
   fbq("init", pixelId);
 }
+
+// Eventos estándar de Meta que usa el sitio. Se envían SIN parámetros:
+// ni datos personales ni el nombre del servicio (información de salud).
+export type MetaStandardEvent = "Schedule";
+
+// No-op si el pixel no está cargado (sin consentimiento o sin ID).
+export function trackMetaEvent(event: MetaStandardEvent): void {
+  if (typeof window === "undefined") return;
+  window.fbq?.("track", event);
+}

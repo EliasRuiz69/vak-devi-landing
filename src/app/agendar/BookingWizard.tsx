@@ -1,9 +1,10 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Logo from "@/components/ui/Logo";
 import { createAppointment, type AppointmentState } from "@/app/actions/schedule";
+import { trackMetaEvent } from "@/lib/meta-pixel";
 
 const appointmentInitial: AppointmentState = { success: false, error: null };
 import type { ServiceRow, ScheduleConfig } from "./page";
@@ -84,6 +85,14 @@ export default function BookingWizard({
     setStep(3);
     loadSlots(selectedService!.id, fecha);
   }
+
+  // Conversión para Meta: una sola vez por cita confirmada, sin parámetros.
+  const scheduleTracked = useRef(false);
+  useEffect(() => {
+    if (!formState.success || scheduleTracked.current) return;
+    scheduleTracked.current = true;
+    trackMetaEvent("Schedule");
+  }, [formState.success]);
 
   // Show success view
   if (formState.success && formState.appointmentData) {
