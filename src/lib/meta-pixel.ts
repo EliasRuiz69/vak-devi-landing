@@ -2,6 +2,8 @@
 // Solo se llama desde MetaPixel.tsx, que comprueba antes el consentimiento.
 // Nunca enviar datos personales ni de salud (nombre, email, teléfono, servicio).
 
+import { getConsent } from "@/lib/cookie-consent";
+
 interface Fbq {
   (...args: unknown[]): void;
   callMethod?: (...args: unknown[]) => void;
@@ -48,8 +50,9 @@ export function loadMetaPixel(pixelId: string): void {
 // ni datos personales ni el nombre del servicio (información de salud).
 export type MetaStandardEvent = "Schedule";
 
-// No-op si el pixel no está cargado (sin consentimiento o sin ID).
+// No-op si el pixel no está cargado (sin ID) o si no hay consentimiento
+// vigente (también cubre retirarlo con el pixel ya cargado).
 export function trackMetaEvent(event: MetaStandardEvent): void {
-  if (typeof window === "undefined") return;
+  if (typeof window === "undefined" || getConsent() !== "accepted") return;
   window.fbq?.("track", event);
 }

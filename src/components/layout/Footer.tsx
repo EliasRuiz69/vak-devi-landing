@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import CookiePreferencesButton from "@/components/ui/CookiePreferencesButton";
 
 export default function Footer() {
   return (
@@ -36,6 +37,8 @@ export default function Footer() {
           >
             Política de Cookies
           </Link>
+          <span aria-hidden>|</span>
+          <CookiePreferencesButton />
           <span aria-hidden>|</span>
           <span>© {new Date().getFullYear()} Vāk Devi. Todos los derechos reservados.</span>
         </div>

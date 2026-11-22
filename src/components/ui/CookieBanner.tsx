@@ -1,29 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useSyncExternalStore } from "react";
 import Link from "next/link";
-import { CONSENT_KEY, setConsent } from "@/lib/cookie-consent";
+import { getConsent, setConsent, subscribeConsent } from "@/lib/cookie-consent";
 
 export default function CookieBanner() {
-  const [visible, setVisible] = useState(false);
+  // En el servidor (undefined) no se muestra; en el cliente se muestra mientras
+  // no haya elección. Reaparece si "Preferencias de cookies" la borra.
+  const consent = useSyncExternalStore(subscribeConsent, getConsent, () => undefined);
 
-  useEffect(() => {
-    if (!localStorage.getItem(CONSENT_KEY)) {
-      setVisible(true);
-    }
-  }, []);
+  if (consent !== null) return null;
 
-  if (!visible) return null;
-
-  const handleAccept = () => {
-    setConsent("accepted");
-    setVisible(false);
-  };
-
-  const handleReject = () => {
-    setConsent("rejected");
-    setVisible(false);
-  };
+  const handleAccept = () => setConsent("accepted");
+  const handleReject = () => setConsent("rejected");
 
   return (
     <div
