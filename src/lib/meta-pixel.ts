@@ -43,6 +43,10 @@ export function loadMetaPixel(pixelId: string): void {
   script.src = "https://connect.facebook.net/en_US/fbevents.js";
   document.head.appendChild(script);
 
+  // Desactiva los eventos automáticos de Meta (clics en botones con su texto,
+  // metadatos de la página): podrían enviar nombres de servicios terapéuticos.
+  // Debe ir antes de "init".
+  fbq("set", "autoConfig", false, pixelId);
   fbq("init", pixelId);
 }
 
