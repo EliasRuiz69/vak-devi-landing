@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import { gsap } from "@/lib/gsap";
@@ -16,7 +16,11 @@ const IMAGE_2 = "/hero/connect-2.jpg";
 export default function Hero() {
   const isMobile = useIsMobile();
   const reducedMotion = useReducedMotion();
-  const useStatic = isMobile || reducedMotion;
+  // Si el hero WebGL falla (sin WebGL o textura sin cargar), se usa la misma
+  // imagen estática que en móvil.
+  const [webglFailed, setWebglFailed] = useState(false);
+  const handleCanvasError = useCallback(() => setWebglFailed(true), []);
+  const useStatic = isMobile || reducedMotion || webglFailed;
 
   const [ready, setReady] = useState(false);
   const subtitleRef = useRef<HTMLDivElement>(null);
@@ -49,7 +53,12 @@ export default function Hero() {
             className="object-cover animate-[kenburns_24s_ease-in-out_infinite]"
           />
         ) : (
-          <HeroCanvas image1={IMAGE_1} image2={IMAGE_2} onReady={() => setReady(true)} />
+          <HeroCanvas
+            image1={IMAGE_1}
+            image2={IMAGE_2}
+            onReady={() => setReady(true)}
+            onError={handleCanvasError}
+          />
         )}
       </div>
 

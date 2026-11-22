@@ -9,9 +9,11 @@ type HeroCanvasProps = {
   image1: string;
   image2: string;
   onReady?: () => void;
+  // WebGL no disponible o una textura no cargó: Hero cae a la imagen estática.
+  onError?: () => void;
 };
 
-export default function HeroCanvas({ image1, image2, onReady }: HeroCanvasProps) {
+export default function HeroCanvas({ image1, image2, onReady, onError }: HeroCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -19,12 +21,20 @@ export default function HeroCanvas({ image1, image2, onReady }: HeroCanvasProps)
     const container = canvas?.parentElement;
     if (!canvas || !container) return;
 
-    const renderer = new THREE.WebGLRenderer({
-      canvas,
-      antialias: true,
-      alpha: true,
-      powerPreference: "high-performance",
-    });
+    // Sin WebGL (aceleración desactivada, drivers bloqueados…) el constructor
+    // lanza; sin este try/catch el error tumbaba la página entera.
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({
+        canvas,
+        antialias: true,
+        alpha: true,
+        powerPreference: "high-performance",
+      });
+    } catch {
+      onError?.();
+      return;
+    }
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
     const scene = new THREE.Scene();
@@ -57,14 +67,26 @@ export default function HeroCanvas({ image1, image2, onReady }: HeroCanvasProps)
     };
 
     const loader = new THREE.TextureLoader();
-    const tex1 = loader.load(image1, (t) => {
-      material.uniforms.uTexRes1.value.set(t.image.width, t.image.height);
-      onTextureReady();
-    });
-    const tex2 = loader.load(image2, (t) => {
-      material.uniforms.uTexRes2.value.set(t.image.width, t.image.height);
-      onTextureReady();
-    });
+    // Si una textura no carga, onReady nunca llegaría y el H1 y el CTA
+    // quedarían ocultos: se avisa con onError.
+    const tex1 = loader.load(
+      image1,
+      (t) => {
+        material.uniforms.uTexRes1.value.set(t.image.width, t.image.height);
+        onTextureReady();
+      },
+      undefined,
+      () => onError?.(),
+    );
+    const tex2 = loader.load(
+      image2,
+      (t) => {
+        material.uniforms.uTexRes2.value.set(t.image.width, t.image.height);
+        onTextureReady();
+      },
+      undefined,
+      () => onError?.(),
+    );
     [tex1, tex2].forEach((t) => {
       t.colorSpace = THREE.SRGBColorSpace;
       t.minFilter = THREE.LinearFilter;
@@ -130,7 +152,7 @@ export default function HeroCanvas({ image1, image2, onReady }: HeroCanvasProps)
       tex2.dispose();
       renderer.dispose();
     };
-  }, [image1, image2, onReady]);
+  }, [image1, image2, onReady, onError]);
 
   return <canvas ref={canvasRef} className="absolute inset-0 h-full w-full pointer-events-none" />;
 }
