@@ -58,7 +58,7 @@ All GSAP plugins are registered once in [src/lib/gsap.ts](src/lib/gsap.ts) — a
 
 ## Routes & auth
 
-- **Public**: `/` (landing), `/agendar` (booking, `BookingWizard.tsx` + `actions/schedule.ts`), `/api/slots` (available-slot calculation), `/login` (`LoginForm.tsx` + `actions/auth.ts`), `/politica-de-cookies`, `/politica-de-privacidad`.
+- **Public**: `/` (landing), `/agendar` (booking, `BookingWizard.tsx` + `actions/schedule.ts`), `/api/slots` (available-slot calculation), `/api/agente/*` (WhatsApp agent API — see below), `/login` (`LoginForm.tsx` + `actions/auth.ts`), `/politica-de-cookies`, `/politica-de-privacidad`.
 - **Admin** (`/admin/*`): `citas` (+ `[id]`), `citas-nueva`, `clientes`, `dashboard`, `disponibilidad`, `servicios`.
 - **Protection**: `src/middleware.ts` refreshes the Supabase session; unauthenticated requests to `/admin/*` redirect to `/login`, and an authenticated user visiting `/login` is sent to `/admin`. Matcher: `/admin/:path*` and `/login`. Server actions additionally check the session with `assertAdmin()`. Next 16 deprecates the `middleware` file convention in favor of `proxy` (see Known tech debt).
 
@@ -75,10 +75,11 @@ Names only — values live in `.env.local` (git-ignored) and in Dokploy; never w
 | `RESEND_API_KEY` | **runtime only** | Resend |
 | `RESEND_FROM_EMAIL` | **runtime only** | Email sender (falls back to `onboarding@resend.dev`) |
 | `THERAPIST_EMAIL` | **runtime only** | Recipient of new-appointment notifications |
+| `AGENT_API_SECRET` | **runtime only** | Shared secret for `/api/agente/*` (header `x-agent-secret`, sent by n8n). Unset or shorter than 32 chars → the agent API rejects every request |
 
 ## Database & migrations
 
-Schema changes live as SQL files in `supabase/migrations/` (`001`–`007`). **The user runs migrations manually in the Supabase Studio SQL Editor. The agent never applies migrations and never touches the production database directly — it only creates or edits the `.sql` files.** `007_update_client_email.sql` adds `public.update_client_email(p_old_email, p_new_email)`, a `SECURITY INVOKER` function grantable only to `service_role` (see Clientes below).
+Schema changes live as SQL files in `supabase/migrations/` (`001`–`008`). **The user runs migrations manually in the Supabase Studio SQL Editor. The agent never applies migrations and never touches the production database directly — it only creates or edits the `.sql` files.** `007_update_client_email.sql` adds `public.update_client_email(p_old_email, p_new_email)`, a `SECURITY INVOKER` function grantable only to `service_role` (see Clientes below).
 
 ## Admin panel
 
@@ -143,9 +144,27 @@ Stored in `public/hero/`:
 - One commit per logical change, with explicit file lists (never `git add .` / `-A`); no interactive git commands.
 - Never `git push` without the explicit instruction "push".
 
+## WhatsApp agent API
+
+The WhatsApp assistant (n8n + YCloud) never touches Supabase directly: it calls `/api/agente/*` (POST, JSON), guarded by `isAgentAuthorized()` in `src/lib/agent-auth.ts` (header `x-agent-secret` vs `AGENT_API_SECRET`, constant-time compare). `src/middleware.ts` does not match these routes.
+
+- `servicios` — active services (`id`, `nombre`, `descripcion`, `duracion_minutos`, `destacado`, `promocion`). **Never returns `precio_mxn`**: prices are not given in the chat.
+- `disponibilidad` — `{ serviceId, desde?, dias? (1–14) }` → days with free slots, each with `fecha_texto` already in Spanish so the model never computes weekdays.
+- `reservar` — `{ serviceId, fecha, hora, nombre, email, telefono }`. Re-checks the slot right before saving (409 + same-day alternatives if taken) and saves with `origen = 'whatsapp'`, no `motivo_consulta`. `telefono` is filled by n8n from the WhatsApp chat, never by the model.
+
+Shared scheduling code (single source for every channel):
+- `src/lib/availability.ts` → `getAvailableSlots(admin, serviceId, fecha, { skipAdvance })`: working days and hours from `schedule_config`, full-day and partial `blocked_dates`, `pending`/`confirmed` appointments, 2 h lead time when the date is today **in Mérida** (`getTodayMerida()`, not the server clock — the container runs in UTC). Used by `/api/slots` and the agent API.
+- `src/lib/booking.ts` → `saveAppointment()`: insert + `clients` upsert + Resend emails, with `origen` (`web` from `/agendar`, `admin` from the manual form, `whatsapp` from the agent). Used by `schedule.ts`, `createManualAppointment` and the agent API. Availability is checked by each caller first.
+- `appointments.origen` (migration `008`, default `web`; rows older than 008 are all `web`). The therapist email shows "Origen: WhatsApp" for agent bookings.
+
+Landing: `src/lib/whatsapp.ts` (`WHATSAPP_NUMERO`, `waLink()`) is the single place for the WhatsApp number and prefilled message; `WhatsAppButton.tsx` (floating, hidden on `/admin` and `/login`) fires the Meta standard event `Contact` without parameters via `trackMetaEvent()`.
+
 ## Known tech debt (documented, not fixed)
 
 - `pnpm lint`: 12 errors + 1 warning as of 2026-11-21 (CookieBanner's was fixed when it moved to `useSyncExternalStore`) — `react-hooks/set-state-in-effect` (NuevaCitaForm, ServiciosClient, Hero), `react/no-unescaped-entities` (CalendarDayView, CitasClient, `citas/[id]/page.tsx`, BookingWizard), `@next/next/no-html-link-for-pages` (`<a>` instead of `<Link>` in NuevaCitaForm), plus an unused `redirect` import warning in `citas/[id]/page.tsx`. `pnpm build` does not run lint, so none of this blocks a deploy.
+- `/agendar` (`schedule.ts`) still re-checks availability with its own older code instead of `getAvailableSlots()`: it counts every non-cancelled appointment as busy, does not check the working day and has no 2 h lead time. The agent API uses `getAvailableSlots()`.
+- No database-level guard against overlapping appointments: each writer re-checks the slot right before inserting (not atomic). Acceptable at current volume.
+- `/admin/citas` does not show or filter by `origen` yet.
 - Every build prints the Next 16 deprecation warning: the `middleware` file convention should become `proxy` (`src/middleware.ts`).
 
 ## Scheduling system
