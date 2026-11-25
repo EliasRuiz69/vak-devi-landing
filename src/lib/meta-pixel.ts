@@ -52,7 +52,7 @@ export function loadMetaPixel(pixelId: string): void {
 
 // Eventos estándar de Meta que usa el sitio. Se envían SIN parámetros:
 // ni datos personales ni el nombre del servicio (información de salud).
-export type MetaStandardEvent = "Schedule";
+export type MetaStandardEvent = "Schedule" | "Contact";
 
 // No-op si el pixel no está cargado (sin ID) o si no hay consentimiento
 // vigente (también cubre retirarlo con el pixel ya cargado).
