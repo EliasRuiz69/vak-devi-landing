@@ -5,6 +5,7 @@ import {
   parseTimeMins,
   slotsOverlap,
 } from "@/lib/schedule-utils";
+import { getTodayMerida } from "@/lib/admin-utils";
 
 export type SlotsResult =
   | { ok: true; slots: string[]; duracionMinutos: number }
@@ -83,13 +84,13 @@ export async function getAvailableSlots(
     })),
   ];
 
-  const today = new Date();
-  const todayIso = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
-  const isToday = fecha === todayIso;
+  // "Hoy" en Mérida, no en la zona del servidor (el contenedor corre en UTC:
+  // a partir de las 18:00 de Mérida su fecha ya es la de mañana).
+  const isToday = fecha === getTodayMerida();
 
   let nowMins = 0;
   if (isToday && !skipAdvance) {
-    const meridaNow = new Date(today.toLocaleString("en-US", { timeZone: "America/Merida" }));
+    const meridaNow = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Merida" }));
     nowMins = meridaNow.getHours() * 60 + meridaNow.getMinutes() + 120;
   }
 
