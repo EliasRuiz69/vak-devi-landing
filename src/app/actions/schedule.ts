@@ -2,13 +2,12 @@
 
 import { createAdminClient } from "@/lib/supabase-admin";
 import {
-  addMinutes,
   formatFechaLong,
   generateCandidateSlots,
   parseTimeMins,
   slotsOverlap,
 } from "@/lib/schedule-utils";
-import { sendAppointmentEmails } from "@/lib/notify-appointment";
+import { saveAppointment } from "@/lib/booking";
 
 export type AppointmentState = {
   success: boolean;
@@ -138,56 +137,30 @@ export async function createAppointment(
     };
   }
 
-  // Compute hora_fin
-  const horaFin = addMinutes(raw.hora, service.duracion_minutos as number);
-
-  // Insert appointment (admin client so it bypasses RLS cleanly)
-  const { error: dbError } = await admin.from("appointments").insert({
-    service_id: raw.serviceId,
+  const saved = await saveAppointment(admin, {
+    service: {
+      id: raw.serviceId,
+      nombre: service.nombre as string,
+      duracion_minutos: service.duracion_minutos as number,
+    },
     fecha: raw.fecha,
-    hora_inicio: raw.hora,
-    hora_fin: horaFin,
-    nombre_cliente: raw.nombre,
-    email_cliente: raw.email,
-    telefono_cliente: raw.telefono,
-    motivo_consulta: raw.motivo || null,
-    estado: "pending",
+    hora: raw.hora,
+    nombre: raw.nombre,
+    email: raw.email,
+    telefono: raw.telefono,
+    motivo: raw.motivo,
+    origen: "web",
+    notify: true,
   });
 
-  if (dbError) {
-    console.error("Supabase insert error:", dbError);
+  if (!saved.ok) {
     return {
       success: false,
       error: "No pudimos guardar tu cita. Por favor intenta de nuevo.",
     };
   }
 
-  // Registrar/actualizar al cliente (no bloqueante — un fallo aquí
-  // nunca debe impedir confirmar una cita ya guardada correctamente)
-  const { error: clientError } = await admin.from("clients").upsert(
-    {
-      email: raw.email,
-      nombre: raw.nombre,
-      telefono: raw.telefono,
-      actualizado_en: new Date().toISOString(),
-    },
-    { onConflict: "email" },
-  );
-  if (clientError) console.error("[clients] upsert error:", clientError);
-
-  // Send emails (non-blocking — don't fail the booking if email fails)
   const fechaLong = formatFechaLong(raw.fecha);
-
-  await sendAppointmentEmails({
-    nombre: raw.nombre,
-    email: raw.email,
-    telefono: raw.telefono,
-    servicio: service.nombre as string,
-    duracion: service.duracion_minutos as number,
-    fechaLong,
-    hora: raw.hora,
-    motivo: raw.motivo,
-  });
 
   return {
     success: true,
