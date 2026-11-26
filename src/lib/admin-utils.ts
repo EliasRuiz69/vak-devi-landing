@@ -1,4 +1,5 @@
 // Server-side date helpers — America/Merida timezone
+import { isWorkingDay } from "@/lib/schedule-utils";
 const TZ = "America/Merida";
 
 export function getTodayMerida(): string {
@@ -114,9 +115,7 @@ export function countWorkingDays(from: string, to: string, workingDays: number[]
   const end = new Date(ty, tm - 1, td);
   const cur = new Date(start);
   while (cur <= end) {
-    const jsDay = cur.getDay();
-    const isoDay = jsDay === 0 ? 7 : jsDay;
-    if (workingDays.includes(isoDay)) count++;
+    if (isWorkingDay(cur, workingDays)) count++;
     cur.setDate(cur.getDate() + 1);
   }
   return count;

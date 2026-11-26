@@ -3,6 +3,7 @@ import { Playfair_Display, Inter } from "next/font/google";
 import SmoothScroll from "@/components/providers/SmoothScroll";
 import CookieBanner from "@/components/ui/CookieBanner";
 import MetaPixel from "@/components/analytics/MetaPixel";
+import WhatsAppButton from "@/components/ui/WhatsAppButton";
 import "./globals.css";
 
 const playfair = Playfair_Display({
@@ -35,6 +36,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col font-sans">
         <SmoothScroll>{children}</SmoothScroll>
+        <WhatsAppButton />
         <CookieBanner />
         <MetaPixel />
       </body>

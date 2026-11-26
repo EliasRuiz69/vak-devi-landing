@@ -3,9 +3,8 @@
 import { createAdminClient } from "@/lib/supabase-admin";
 import { createAuthClient } from "@/lib/supabase-server";
 import { revalidatePath } from "next/cache";
-import { addMinutes, formatFechaLong } from "@/lib/schedule-utils";
 import { getTodayMerida } from "@/lib/admin-utils";
-import { sendAppointmentEmails } from "@/lib/notify-appointment";
+import { saveAppointment } from "@/lib/booking";
 
 async function assertAdmin() {
   const supabase = await createAuthClient();
@@ -114,47 +113,26 @@ export async function createManualAppointment(
     .single();
   if (!service) return { success: false, error: "Servicio no encontrado." };
 
-  const horaFin = addMinutes(raw.hora, service.duracion_minutos as number);
-  const { error } = await admin.from("appointments").insert({
-    service_id: raw.serviceId,
-    fecha: raw.fecha,
-    hora_inicio: raw.hora,
-    hora_fin: horaFin,
-    nombre_cliente: raw.nombre,
-    email_cliente: raw.email,
-    telefono_cliente: raw.telefono,
-    motivo_consulta: raw.motivo || null,
-    estado: estadoInicial,
-  });
-  if (error) return { success: false, error: "Error al guardar. Inténtalo de nuevo." };
-
-  // Registrar/actualizar al cliente (no bloqueante)
-  const { error: clientError } = await admin.from("clients").upsert(
-    {
-      email: raw.email,
-      nombre: raw.nombre,
-      telefono: raw.telefono,
-      actualizado_en: new Date().toISOString(),
+  // Correos solo si la cita es de hoy o futura: una cita manual con fecha
+  // pasada no debe generar un correo que diga "te esperamos" para algo que
+  // ya ocurrió.
+  const saved = await saveAppointment(admin, {
+    service: {
+      id: raw.serviceId,
+      nombre: service.nombre as string,
+      duracion_minutos: service.duracion_minutos as number,
     },
-    { onConflict: "email" },
-  );
-  if (clientError) console.error("[clients] upsert error:", clientError);
-
-  // Correos (no bloqueantes, mismo patrón que /agendar) — solo si la cita
-  // es de hoy o futura; una cita manual con fecha pasada no debe generar
-  // un correo que diga "te esperamos" para algo que ya ocurrió.
-  if (raw.fecha >= getTodayMerida()) {
-    await sendAppointmentEmails({
-      nombre: raw.nombre,
-      email: raw.email,
-      telefono: raw.telefono,
-      servicio: service.nombre as string,
-      duracion: service.duracion_minutos as number,
-      fechaLong: formatFechaLong(raw.fecha),
-      hora: raw.hora,
-      motivo: raw.motivo,
-    });
-  }
+    fecha: raw.fecha,
+    hora: raw.hora,
+    nombre: raw.nombre,
+    email: raw.email,
+    telefono: raw.telefono,
+    motivo: raw.motivo,
+    estado: estadoInicial as "pending" | "confirmed",
+    origen: "admin",
+    notify: raw.fecha >= getTodayMerida(),
+  });
+  if (!saved.ok) return { success: false, error: "Error al guardar. Inténtalo de nuevo." };
 
   revalidatePath("/admin", "layout");
   return { success: true, error: null };

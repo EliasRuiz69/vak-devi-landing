@@ -153,6 +153,7 @@ type AppointmentNotifData = {
   hora: string;
   duracion: number;
   motivo?: string;
+  origen?: "web" | "admin" | "whatsapp";
 };
 
 export function appointmentNotificationHtml(data: AppointmentNotifData) {
@@ -184,6 +185,7 @@ export function appointmentNotificationHtml(data: AppointmentNotifData) {
               ${row("Fecha", data.fecha)}
               ${row("Hora", `${data.hora} h (${data.duracion} min)`)}
               ${data.motivo ? row("Motivo", data.motivo, true) : ""}
+              ${data.origen === "whatsapp" ? row("Origen", "WhatsApp (asistente virtual)") : ""}
             </table>
             <div style="margin-top:32px;text-align:center;">
               <a href="https://www.vakdevi-psicoterapia.com/admin/dashboard" style="display:inline-block;background:#8B1EA0;color:#ffffff;font-size:13px;letter-spacing:2px;text-decoration:none;padding:14px 32px;border-radius:40px;">

@@ -13,6 +13,8 @@ export type AppointmentEmailData = {
   fechaLong: string;
   hora: string;
   motivo?: string;
+  // Canal de la cita; solo "whatsapp" se indica en el email a la terapeuta.
+  origen?: "web" | "admin" | "whatsapp";
 };
 
 // Movido tal cual desde createAppointment (schedule.ts) — notificación a la
@@ -46,6 +48,7 @@ export async function sendAppointmentEmails(data: AppointmentEmailData): Promise
         hora: data.hora,
         duracion: data.duracion,
         motivo: data.motivo,
+        origen: data.origen,
       }),
     }),
     resend.emails.send({
