@@ -1,8 +1,9 @@
 -- Datos sintéticos SOLO para el Supabase de TEST (vakdevi-test-api.ervia.tech).
 -- NUNCA ejecutar en producción.
 --
--- Se ejecuta después de las migraciones 001–008 (que ya cargan los 6 servicios,
--- el horario y citas pasadas de ejemplo). Añade:
+-- Se ejecuta después de las migraciones 001–008 (que ya cargan servicios de
+-- ejemplo, el horario y citas pasadas) o después de copiar los servicios de
+-- producción. Añade:
 --   1. El servicio de la Primera Cita Virtual Exploratoria Gratuita (en
 --      producción se creó desde el panel; aquí se replica para el agente).
 --   2. Citas futuras y bloqueos en los 3 próximos días laborables, para probar
@@ -33,7 +34,11 @@ begin
   select d::date into d3 from generate_series(d2 + 1, d2 + 14, interval '1 day') d
     where extract(isodow from d) between 1 and 5 order by d limit 1;
 
-  select id into sid_psico from public.services where nombre ilike 'Psicoterapia%' limit 1;
+  -- Primer servicio activo que no sea el exploratorio (vale tanto con los
+  -- servicios de ejemplo de 001 como con los copiados de producción).
+  select id into sid_psico from public.services
+    where activo and nombre <> 'Primera Cita Virtual Exploratoria Gratuita'
+    order by orden limit 1;
   select id into sid_explo from public.services where nombre = 'Primera Cita Virtual Exploratoria Gratuita';
 
   -- Día 1: dos citas ocupando 10:00–12:00
