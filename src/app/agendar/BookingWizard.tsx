@@ -5,6 +5,7 @@ import Link from "next/link";
 import Logo from "@/components/ui/Logo";
 import { createAppointment, type AppointmentState } from "@/app/actions/schedule";
 import { trackMetaEvent } from "@/lib/meta-pixel";
+import { isWorkingDay as isWorkingDayConfig } from "@/lib/schedule-utils";
 
 const appointmentInitial: AppointmentState = { success: false, error: null };
 import type { ServiceRow, ScheduleConfig } from "./page";
@@ -353,9 +354,7 @@ function StepFecha({
   }
 
   function isWorkingDay(date: Date) {
-    const jsDay = date.getDay();
-    const isoDay = jsDay === 0 ? 7 : jsDay;
-    return (scheduleConfig.dias_laborables as number[]).includes(isoDay);
+    return isWorkingDayConfig(date, scheduleConfig.dias_laborables as number[]);
   }
 
   return (

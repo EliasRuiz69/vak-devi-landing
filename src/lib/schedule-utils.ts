@@ -37,10 +37,14 @@ export function slotsOverlap(
   return slotStartMins < apptEndMins && slotStartMins + slotDuration > apptStartMins;
 }
 
+// schedule_config.dias_laborables usa Lun=1 … Sáb=6 en ambas convenciones,
+// pero el domingo aparece como 0 (lo guarda así el panel de Disponibilidad,
+// Dom=0 … Sáb=6) o como 7 (ISO, valor por defecto de las migraciones).
+// Se aceptan las dos para que el domingo no quede siempre cerrado.
 export function isWorkingDay(date: Date, workingDays: number[]): boolean {
   const jsDay = date.getDay();
-  const isoDay = jsDay === 0 ? 7 : jsDay;
-  return workingDays.includes(isoDay);
+  if (jsDay === 0) return workingDays.includes(0) || workingDays.includes(7);
+  return workingDays.includes(jsDay);
 }
 
 export function formatFechaLong(fecha: string): string {
