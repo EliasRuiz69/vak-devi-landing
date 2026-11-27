@@ -1,6 +1,6 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useEffect, useRef, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { getConsent, setConsent, subscribeConsent } from "@/lib/cookie-consent";
 
@@ -8,6 +8,28 @@ export default function CookieBanner() {
   // En el servidor (undefined) no se muestra; en el cliente se muestra mientras
   // no haya elección. Reaparece si "Preferencias de cookies" la borra.
   const consent = useSyncExternalStore(subscribeConsent, getConsent, () => undefined);
+  const bannerRef = useRef<HTMLDivElement>(null);
+
+  // Publica la altura del banner en --cookie-banner-h para que el botón
+  // flotante de WhatsApp se coloque justo encima y no quede tapado. Vuelve a 0
+  // en cuanto la persona elige (el banner deja de renderizarse).
+  useEffect(() => {
+    const root = document.documentElement;
+    const el = bannerRef.current;
+    if (!el) {
+      root.style.setProperty("--cookie-banner-h", "0px");
+      return;
+    }
+    const publicar = () =>
+      root.style.setProperty("--cookie-banner-h", `${Math.ceil(el.getBoundingClientRect().height)}px`);
+    publicar();
+    const observer = new ResizeObserver(publicar);
+    observer.observe(el);
+    return () => {
+      observer.disconnect();
+      root.style.setProperty("--cookie-banner-h", "0px");
+    };
+  }, [consent]);
 
   if (consent !== null) return null;
 
@@ -16,6 +38,7 @@ export default function CookieBanner() {
 
   return (
     <div
+      ref={bannerRef}
       role="dialog"
       aria-label="Consentimiento de cookies"
       className="fixed bottom-0 inset-x-0 z-[9999] bg-lavender border-t border-ink/10 shadow-[0_-4px_24px_rgba(0,0,0,0.08)] px-5 py-4 sm:px-8"

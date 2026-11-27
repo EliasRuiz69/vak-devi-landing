@@ -19,7 +19,10 @@ export default function WhatsAppButton() {
       rel="noopener noreferrer"
       onClick={() => trackMetaEvent("Contact")}
       aria-label="Escríbenos por WhatsApp"
-      className="fixed bottom-5 right-5 z-[60] inline-flex items-center gap-2 rounded-full bg-purple-1 px-4 py-3 text-sm text-white shadow-[0_6px_24px_rgba(42,18,48,0.25)] transition-colors hover:bg-purple-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-2"
+      // Mientras se ve el banner de cookies, sube lo que mide (--cookie-banner-h
+      // lo publica CookieBanner); sin banner, la variable es 0 y queda abajo.
+      style={{ bottom: "calc(1.25rem + var(--cookie-banner-h, 0px))" }}
+      className="fixed right-5 z-[60] inline-flex items-center gap-2 rounded-full bg-purple-1 px-4 py-3 text-sm text-white shadow-[0_6px_24px_rgba(42,18,48,0.25)] transition-[background-color,bottom] duration-300 motion-reduce:transition-none hover:bg-purple-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-2"
     >
       <svg
         aria-hidden="true"
